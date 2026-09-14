@@ -1,0 +1,25 @@
+.tab-bar {
+  display: flex;
+  border-top: 0.5px solid var(--line);
+  padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+  background: var(--paper);
+}
+
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: 12px;
+  padding: 4px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tab-item.active {
+  color: var(--ink);
+}

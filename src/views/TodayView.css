@@ -1,0 +1,50 @@
+.today-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.today-date {
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin: 0 0 2px;
+}
+
+.today-title {
+  font-size: 26px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.today-add {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 0.5px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.today-empty {
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.today-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.today-list .task-card {
+  margin-top: 0;
+}
+
+.today-list .task-card + .task-card {
+  margin-top: var(--gap-card);
+}

@@ -1,0 +1,21 @@
+:root {
+  --paper: #eef0e6;
+  --ink: #1e231c;
+  --ink-soft: #5b6156;
+  --moss: #3f6b4a;
+  --moss-bg: #e1e9dd;
+  --ochre: #b8863a;
+  --ochre-bg: #f2e6d3;
+  --ochre-text: #633806;
+  --line: #d9dcc9;
+  --card: #ffffff;
+
+  --radius-card: 14px;
+  --radius-lg: 16px;
+  --radius-chip: 8px;
+  --gap-card: 10px;
+  --pad-card: 14px;
+
+  --font-ui: 'Manrope', system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', monospace;
+}

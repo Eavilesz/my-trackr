@@ -1,0 +1,13 @@
+.app-shell {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-content {
+  flex: 1;
+  padding: 24px 16px 16px;
+  overflow-y: auto;
+}

@@ -1,0 +1,99 @@
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 35, 28, 0.35);
+  display: flex;
+  align-items: flex-end;
+  z-index: 10;
+}
+
+.sheet {
+  width: 100%;
+  background: var(--paper);
+  border-radius: 20px 20px 0 0;
+  padding: 20px 16px calc(20px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sheet-header h2 {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.sheet-close {
+  border: none;
+  background: transparent;
+  color: var(--ink-soft);
+  padding: 4px;
+  cursor: pointer;
+}
+
+.sheet-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  flex: 1;
+}
+
+.sheet-field input {
+  border: 0.5px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 15px;
+  color: var(--ink);
+  background: var(--card);
+  font-family: inherit;
+}
+
+.sheet-row {
+  display: flex;
+  gap: 10px;
+}
+
+.sheet-type-toggle {
+  display: flex;
+  gap: 8px;
+}
+
+.sheet-type-toggle button {
+  flex: 1;
+  border: 0.5px solid var(--line);
+  background: var(--card);
+  color: var(--ink-soft);
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.sheet-type-toggle button.active {
+  border-color: var(--moss);
+  background: var(--moss-bg);
+  color: var(--ink);
+}
+
+.sheet-submit {
+  border: none;
+  background: var(--moss);
+  color: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 6px;
+}
