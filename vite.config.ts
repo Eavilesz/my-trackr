@@ -1,11 +1,22 @@
 import react from '@vitejs/plugin-react'
+import basicSsl from '@vitejs/plugin-basic-ssl'
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    host: true,
+  },
+  preview: {
+    host: true,
+  },
   plugins: [
     react(),
+    // Self-signed HTTPS for dev/preview — service workers and "Add to Home
+    // Screen" both require a secure context, and localhost is the only
+    // exception, so LAN testing on a phone needs this.
+    basicSsl(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
