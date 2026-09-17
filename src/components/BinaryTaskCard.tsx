@@ -1,4 +1,4 @@
-import { IconCheck } from '@tabler/icons-react'
+import { IconCheck, IconPencil } from '@tabler/icons-react'
 import type { BinaryTask } from '../lib/types'
 import './TaskCard.css'
 
@@ -7,9 +7,10 @@ type Props = {
   done: boolean
   streak: number
   onToggle: () => void
+  onEdit: () => void
 }
 
-export function BinaryTaskCard({ task, done, streak, onToggle }: Props) {
+export function BinaryTaskCard({ task, done, streak, onToggle, onEdit }: Props) {
   return (
     <div className="task-card binary-card">
       <button
@@ -27,6 +28,14 @@ export function BinaryTaskCard({ task, done, streak, onToggle }: Props) {
           {streak > 0 ? `${streak} day streak` : 'No streak yet'}
         </span>
       </div>
+      <button
+        type="button"
+        className="task-edit"
+        onClick={onEdit}
+        aria-label={`Edit "${task.name}"`}
+      >
+        <IconPencil size={16} />
+      </button>
     </div>
   )
 }

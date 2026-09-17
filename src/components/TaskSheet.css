@@ -97,3 +97,13 @@
   cursor: pointer;
   margin-top: 6px;
 }
+
+.sheet-delete {
+  border: none;
+  background: transparent;
+  color: #b3432f;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px;
+  cursor: pointer;
+}

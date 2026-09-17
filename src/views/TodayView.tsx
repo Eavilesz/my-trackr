@@ -3,10 +3,11 @@ import { format } from 'date-fns'
 import { IconPlus } from '@tabler/icons-react'
 import { BinaryTaskCard } from '../components/BinaryTaskCard'
 import { QuantityTaskCard } from '../components/QuantityTaskCard'
-import { AddTaskSheet } from '../components/AddTaskSheet'
-import { useAppState, toggleBinary, addToLog, getLog } from '../lib/store'
+import { TaskSheet } from '../components/TaskSheet'
+import { useAppState, toggleBinary, addToLog, setLog, getLog } from '../lib/store'
 import { todayKey } from '../lib/dates'
 import { currentStreak } from '../lib/streak'
+import type { Task } from '../lib/types'
 import './TodayView.css'
 
 export function TodayView() {
@@ -14,6 +15,7 @@ export function TodayView() {
   const key = todayKey()
   const tasks = state.tasks.filter((t) => !t.archived)
   const [showAdd, setShowAdd] = useState(false)
+  const [editingTask, setEditingTask] = useState<Task | null>(null)
 
   return (
     <div className="today-view">
@@ -47,21 +49,28 @@ export function TodayView() {
                 done={done}
                 streak={currentStreak(state, task)}
                 onToggle={() => toggleBinary(key, task.id)}
+                onEdit={() => setEditingTask(task)}
               />
             )
           }
+          const value = getLog(key, task.id)
           return (
             <QuantityTaskCard
               key={task.id}
               task={task}
-              value={getLog(key, task.id)}
+              value={value}
               onAdd={(amount) => addToLog(key, task.id, amount)}
+              onComplete={() => setLog(key, task.id, value >= task.goal ? 0 : task.goal)}
+              onEdit={() => setEditingTask(task)}
             />
           )
         })}
       </div>
 
-      {showAdd && <AddTaskSheet onClose={() => setShowAdd(false)} />}
+      {showAdd && <TaskSheet onClose={() => setShowAdd(false)} />}
+      {editingTask && (
+        <TaskSheet task={editingTask} onClose={() => setEditingTask(null)} />
+      )}
     </div>
   )
 }

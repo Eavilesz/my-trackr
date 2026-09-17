@@ -1,3 +1,4 @@
+import { IconCheck, IconPencil } from '@tabler/icons-react'
 import type { QuantityTask } from '../lib/types'
 import './TaskCard.css'
 
@@ -5,18 +6,38 @@ type Props = {
   task: QuantityTask
   value: number
   onAdd: (amount: number) => void
+  onComplete: () => void
+  onEdit: () => void
 }
 
-export function QuantityTaskCard({ task, value, onAdd }: Props) {
+export function QuantityTaskCard({ task, value, onAdd, onComplete, onEdit }: Props) {
   const pct = Math.min(100, (value / task.goal) * 100)
+  const done = value >= task.goal
 
   return (
     <div className="task-card quantity-card">
       <div className="quantity-header">
-        <span className="task-label">{task.name}</span>
+        <button
+          type="button"
+          className={`quantity-check${done ? ' checked' : ''}`}
+          onClick={onComplete}
+          aria-pressed={done}
+          aria-label={`Mark "${task.name}" goal as ${done ? 'not met' : 'met'}`}
+        >
+          {done && <IconCheck size={14} stroke={3} />}
+        </button>
+        <span className="task-label quantity-name">{task.name}</span>
         <span className="quantity-figure">
           {value} / {task.goal} {task.unit}
         </span>
+        <button
+          type="button"
+          className="task-edit"
+          onClick={onEdit}
+          aria-label={`Edit "${task.name}"`}
+        >
+          <IconPencil size={16} />
+        </button>
       </div>
       <div className="quantity-track">
         <div className="quantity-fill" style={{ width: `${pct}%` }} />

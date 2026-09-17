@@ -59,6 +59,17 @@ export function archiveTask(id: string) {
   updateTask(id, { archived: true })
 }
 
+/** Permanently removes a task and its logged history for every day. */
+export function deleteTask(id: string) {
+  const logs: typeof state.logs = {}
+  for (const [day, entries] of Object.entries(state.logs)) {
+    const { [id]: _removed, ...rest } = entries
+    logs[day] = rest
+  }
+  state = { tasks: state.tasks.filter((t) => t.id !== id), logs }
+  persist()
+}
+
 /** Set a task's value for a given day. Binary tasks use 0/1. */
 export function setLog(dateKey: DateKey, taskId: string, value: number) {
   const dayLogs = { ...(state.logs[dateKey] ?? {}) }

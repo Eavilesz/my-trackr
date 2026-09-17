@@ -1,32 +1,38 @@
 import { useState } from 'react'
 import { IconX } from '@tabler/icons-react'
-import { addTask } from '../lib/store'
+import { addTask, updateTask, deleteTask } from '../lib/store'
 import { newId } from '../lib/id'
 import { todayKey } from '../lib/dates'
 import type { Task } from '../lib/types'
-import './AddTaskSheet.css'
+import './TaskSheet.css'
 
 type Props = {
+  /** Task being edited, or undefined to create a new one. */
+  task?: Task
   onClose: () => void
 }
 
-export function AddTaskSheet({ onClose }: Props) {
-  const [type, setType] = useState<'binary' | 'quantity'>('binary')
-  const [name, setName] = useState('')
-  const [goal, setGoal] = useState('')
-  const [unit, setUnit] = useState('')
-  const [quickAdds, setQuickAdds] = useState('10, 20')
+export function TaskSheet({ task, onClose }: Props) {
+  const isEditing = task !== undefined
+  const [type, setType] = useState<'binary' | 'quantity'>(task?.type ?? 'binary')
+  const [name, setName] = useState(task?.name ?? '')
+  const [goal, setGoal] = useState(task?.type === 'quantity' ? String(task.goal) : '')
+  const [unit, setUnit] = useState(task?.type === 'quantity' ? task.unit : '')
+  const [quickAdds, setQuickAdds] = useState(
+    task?.type === 'quantity' ? task.quickAdds.join(', ') : '10, 20',
+  )
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const trimmedName = name.trim()
     if (!trimmedName) return
 
-    const base = { id: newId(), name: trimmedName, createdAt: todayKey() }
-
-    let task: Task
     if (type === 'binary') {
-      task = { ...base, type: 'binary' }
+      if (isEditing) {
+        updateTask(task.id, { name: trimmedName, type: 'binary' })
+      } else {
+        addTask({ id: newId(), name: trimmedName, createdAt: todayKey(), type: 'binary' })
+      }
     } else {
       const parsedGoal = Number(goal)
       if (!Number.isFinite(parsedGoal) || parsedGoal <= 0) return
@@ -34,16 +40,27 @@ export function AddTaskSheet({ onClose }: Props) {
         .split(',')
         .map((s) => Number(s.trim()))
         .filter((n) => Number.isFinite(n) && n > 0)
-      task = {
-        ...base,
-        type: 'quantity',
+      const quantityFields = {
+        name: trimmedName,
+        type: 'quantity' as const,
         goal: parsedGoal,
         unit: unit.trim() || 'units',
         quickAdds: parsedQuickAdds.length > 0 ? parsedQuickAdds : [10],
       }
+      if (isEditing) {
+        updateTask(task.id, quantityFields)
+      } else {
+        addTask({ id: newId(), createdAt: todayKey(), ...quantityFields })
+      }
     }
 
-    addTask(task)
+    onClose()
+  }
+
+  function handleDelete() {
+    if (!task) return
+    if (!window.confirm(`Delete "${task.name}"? This removes its full history.`)) return
+    deleteTask(task.id)
     onClose()
   }
 
@@ -51,7 +68,7 @@ export function AddTaskSheet({ onClose }: Props) {
     <div className="sheet-backdrop" onClick={onClose}>
       <form className="sheet" onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit}>
         <div className="sheet-header">
-          <h2>New habit</h2>
+          <h2>{isEditing ? 'Edit habit' : 'New habit'}</h2>
           <button type="button" className="sheet-close" onClick={onClose} aria-label="Close">
             <IconX size={18} />
           </button>
@@ -118,8 +135,14 @@ export function AddTaskSheet({ onClose }: Props) {
         )}
 
         <button type="submit" className="sheet-submit">
-          Add habit
+          {isEditing ? 'Save changes' : 'Add habit'}
         </button>
+
+        {isEditing && (
+          <button type="button" className="sheet-delete" onClick={handleDelete}>
+            Delete habit
+          </button>
+        )}
       </form>
     </div>
   )
