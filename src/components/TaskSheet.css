@@ -52,7 +52,9 @@
   border: 0.5px solid var(--line);
   border-radius: 10px;
   padding: 10px 12px;
-  font-size: 15px;
+  /* iOS Safari zooms the page in on focus for any input under 16px, and
+     doesn't zoom back out on blur — 16px avoids triggering it. */
+  font-size: 16px;
   color: var(--ink);
   background: var(--card);
   font-family: inherit;
