@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { IconCheck, IconNote, IconX } from '@tabler/icons-react'
 import { BINARY_DONE, BINARY_FAILED, type BinaryTask } from '../lib/types'
+import { TaskName } from './TaskName'
 import './TaskCard.css'
 
 type Props = {
@@ -45,13 +46,7 @@ export function BinaryTaskCard({ task, value, streak, note, onToggle, onEdit, on
         {failed && <IconX size={20} stroke={2.5} />}
       </button>
       <div className="binary-body">
-        {onEdit ? (
-          <button type="button" className="task-label task-name-btn" onClick={onEdit}>
-            {task.name}
-          </button>
-        ) : (
-          <span className="task-label">{task.name}</span>
-        )}
+        <TaskName task={task} onEdit={onEdit} />
         <span className="task-subtext">
           {streak > 0 ? `${streak} day streak` : 'No streak yet'}
         </span>

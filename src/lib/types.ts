@@ -6,6 +6,8 @@ export type TaskBase = {
   name: string
   createdAt: DateKey
   archived?: boolean
+  /** Id of an icon from lib/icons.ts. */
+  icon?: string
 }
 
 export type BinaryTask = TaskBase & {

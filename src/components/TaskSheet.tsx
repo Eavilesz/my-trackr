@@ -3,6 +3,7 @@ import { IconX } from '@tabler/icons-react'
 import { addTask, updateTask, deleteTask } from '../lib/store'
 import { newId } from '../lib/id'
 import { todayKey } from '../lib/dates'
+import { HABIT_ICONS } from '../lib/icons'
 import type { Task } from '../lib/types'
 import './TaskSheet.css'
 
@@ -16,6 +17,7 @@ export function TaskSheet({ task, onClose }: Props) {
   const isEditing = task !== undefined
   const [type, setType] = useState<'binary' | 'quantity'>(task?.type ?? 'binary')
   const [name, setName] = useState(task?.name ?? '')
+  const [icon, setIcon] = useState<string | undefined>(task?.icon)
   const [goal, setGoal] = useState(task?.type === 'quantity' ? String(task.goal) : '')
   const [unit, setUnit] = useState(task?.type === 'quantity' ? task.unit : '')
   const [quickAdds, setQuickAdds] = useState(
@@ -29,9 +31,9 @@ export function TaskSheet({ task, onClose }: Props) {
 
     if (type === 'binary') {
       if (isEditing) {
-        updateTask(task.id, { name: trimmedName, type: 'binary' })
+        updateTask(task.id, { name: trimmedName, type: 'binary', icon })
       } else {
-        addTask({ id: newId(), name: trimmedName, createdAt: todayKey(), type: 'binary' })
+        addTask({ id: newId(), name: trimmedName, createdAt: todayKey(), type: 'binary', icon })
       }
     } else {
       const parsedGoal = Number(goal)
@@ -42,6 +44,7 @@ export function TaskSheet({ task, onClose }: Props) {
         .filter((n) => Number.isFinite(n) && n > 0)
       const quantityFields = {
         name: trimmedName,
+        icon,
         type: 'quantity' as const,
         goal: parsedGoal,
         unit: unit.trim() || 'units',
@@ -83,6 +86,24 @@ export function TaskSheet({ task, onClose }: Props) {
             autoFocus
           />
         </label>
+
+        <div className="sheet-field">
+          <span>Icon (optional)</span>
+          <div className="icon-picker">
+            {HABIT_ICONS.map(({ id, label, Icon }) => (
+              <button
+                key={id}
+                type="button"
+                className={icon === id ? 'active' : ''}
+                onClick={() => setIcon(icon === id ? undefined : id)}
+                aria-label={label}
+                aria-pressed={icon === id}
+              >
+                <Icon size={20} stroke={1.75} />
+              </button>
+            ))}
+          </div>
+        </div>
 
         <div className="sheet-type-toggle">
           <button

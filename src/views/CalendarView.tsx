@@ -4,6 +4,7 @@ import { IconCheck, IconX, IconChevronLeft, IconChevronRight } from '@tabler/ico
 import { useAppState } from '../lib/store'
 import { toDateKey, todayKey, monthGrid, shiftMonth, WEEKDAY_LABELS } from '../lib/dates'
 import { isDayComplete, isDayFailed } from '../lib/streak'
+import { TaskName } from '../components/TaskName'
 import { DaySheet } from '../components/DaySheet'
 import type { DateKey, Task } from '../lib/types'
 import './CalendarView.css'
@@ -69,7 +70,10 @@ export function CalendarView() {
       {tasks.length > 0 && (
         <>
           <p className="cal-legend">
-            Top to bottom: {tasks.map((t) => t.name).join(' · ')}
+            Top to bottom:
+            {tasks.map((t) => (
+              <TaskName key={t.id} task={t} className="cal-legend-item" />
+            ))}
           </p>
 
           <div className="cal-grid">

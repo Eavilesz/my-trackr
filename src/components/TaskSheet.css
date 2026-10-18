@@ -46,9 +46,11 @@
   font-size: 13px;
   color: var(--ink-soft);
   flex: 1;
+  min-width: 0;
 }
 
 .sheet-field input {
+  width: 100%;
   border: 0.5px solid var(--line);
   border-radius: 10px;
   padding: 10px 12px;
@@ -108,4 +110,30 @@
   font-weight: 500;
   padding: 8px;
   cursor: pointer;
+}
+
+.icon-picker {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.icon-picker button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  border: 0.5px solid var(--line);
+  background: var(--card);
+  color: var(--ink-soft);
+  border-radius: 10px;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.icon-picker button.active {
+  border-color: var(--moss);
+  background: var(--moss-bg);
+  color: var(--ink);
 }

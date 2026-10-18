@@ -59,6 +59,18 @@
   color: var(--ink);
 }
 
+/* Icon + name share a baseline row. */
+.task-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.task-icon {
+  flex: none;
+  color: var(--ink-soft);
+}
+
 .task-subtext {
   font-size: 12px;
   color: var(--ink-soft);

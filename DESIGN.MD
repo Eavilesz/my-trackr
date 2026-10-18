@@ -36,6 +36,7 @@ Rule: moss = completed. Rust = missed (past days only). Ochre = quantity/progres
 - 38px circle on the left, three states cycled by tapping: unmarked (2px `--line` border) → done (`--moss` fill + check) → failed (`--rust` fill + ✕) → unmarked
 - 15px/500 label in `--ink`, 12px subtext "6 day streak" in `--ink-soft`
 - Optional per-day note, only while the habit is in the failed state ("Add note" link under the subtext, inline input, max 30 chars); shown in the red calendar chip for that day. Leaving the failed state clears the note
+- Optional icon before the name (16px Tabler outline, `--ink-soft`), picked in the habit sheet from a 5×2 grid; tap the selected icon again to remove it. Set lives in `src/lib/icons.ts` (strength, running, cycling, stretching, nutrition, water, sleep, health, reading, focus). A habit stores only the icon id, so ids must stay stable. The calendar legend shows the same icons
 - Tapping the habit name opens the edit sheet (no pencil icon, on both binary and quantity cards)
 
 **Quantity habit** (same base card)

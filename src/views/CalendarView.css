@@ -29,6 +29,10 @@
 }
 
 .cal-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
   margin: 0 0 12px;
   font-size: 12px;
   color: var(--ink-soft);
@@ -137,4 +141,12 @@ button.cal-day {
 
 .cal-chip-text--mono {
   font-family: var(--font-mono);
+}
+
+/* Legend entries reuse TaskName, which is styled for cards — tone it down here. */
+.cal-legend .cal-legend-item {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--ink-soft);
+  gap: 4px;
 }

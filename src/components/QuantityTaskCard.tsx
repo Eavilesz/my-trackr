@@ -1,5 +1,6 @@
 import { IconCheck } from '@tabler/icons-react'
 import type { QuantityTask } from '../lib/types'
+import { TaskName } from './TaskName'
 import './TaskCard.css'
 
 type Props = {
@@ -26,13 +27,7 @@ export function QuantityTaskCard({ task, value, onAdd, onComplete, onEdit }: Pro
         >
           {done && <IconCheck size={14} stroke={3} />}
         </button>
-        {onEdit ? (
-          <button type="button" className="task-label task-name-btn quantity-name" onClick={onEdit}>
-            {task.name}
-          </button>
-        ) : (
-          <span className="task-label quantity-name">{task.name}</span>
-        )}
+        <TaskName task={task} className="quantity-name" onEdit={onEdit} />
         <span className="quantity-figure">
           {value} / {task.goal} {task.unit}
         </span>
