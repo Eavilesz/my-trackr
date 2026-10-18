@@ -10,7 +10,7 @@ type Props = {
   streak: number
   note: string
   onToggle: () => void
-  onEdit: () => void
+  onEdit?: () => void
   onNoteChange: (text: string) => void
 }
 
@@ -45,9 +45,13 @@ export function BinaryTaskCard({ task, value, streak, note, onToggle, onEdit, on
         {failed && <IconX size={20} stroke={2.5} />}
       </button>
       <div className="binary-body">
-        <button type="button" className="task-label task-name-btn" onClick={onEdit}>
-          {task.name}
-        </button>
+        {onEdit ? (
+          <button type="button" className="task-label task-name-btn" onClick={onEdit}>
+            {task.name}
+          </button>
+        ) : (
+          <span className="task-label">{task.name}</span>
+        )}
         <span className="task-subtext">
           {streak > 0 ? `${streak} day streak` : 'No streak yet'}
         </span>
@@ -57,7 +61,7 @@ export function BinaryTaskCard({ task, value, streak, note, onToggle, onEdit, on
               className="task-note-input"
               value={draft}
               maxLength={30}
-              placeholder="Note for today"
+              placeholder="Note"
               autoFocus
               enterKeyHint="done"
               onChange={(e) => setDraft(e.target.value)}

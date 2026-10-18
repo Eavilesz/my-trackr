@@ -7,7 +7,7 @@ type Props = {
   value: number
   onAdd: (amount: number) => void
   onComplete: () => void
-  onEdit: () => void
+  onEdit?: () => void
 }
 
 export function QuantityTaskCard({ task, value, onAdd, onComplete, onEdit }: Props) {
@@ -26,9 +26,13 @@ export function QuantityTaskCard({ task, value, onAdd, onComplete, onEdit }: Pro
         >
           {done && <IconCheck size={14} stroke={3} />}
         </button>
-        <button type="button" className="task-label task-name-btn quantity-name" onClick={onEdit}>
-          {task.name}
-        </button>
+        {onEdit ? (
+          <button type="button" className="task-label task-name-btn quantity-name" onClick={onEdit}>
+            {task.name}
+          </button>
+        ) : (
+          <span className="task-label quantity-name">{task.name}</span>
+        )}
         <span className="quantity-figure">
           {value} / {task.goal} {task.unit}
         </span>

@@ -48,6 +48,8 @@ Rule: moss = completed. Rust = missed (past days only). Ochre = quantity/progres
 
 **Calendar view:** Monday-start month grid, one card-colored cell per day. Each cell shows the date, then one chip per habit in the same order as the habit list (a legend above the grid names them). Chips: done = `--moss-bg` with a check; missed (past days only) = `--rust-bg` with a ✕. A failed binary chip (or an unmarked one on a past day) shows the day's note instead of the ✕ when there is one. Quantity chips show the logged amount in mono (e.g. `158 g`). Today's unfinished habits are `--ochre-bg` (or blank when nothing is logged). A day with every habit done gets a `--moss-tint` cell; a past day with any miss gets `--rust-tint`. Future days show only the date; habits only count from the day they were created. Today's date sits in an `--ink` circle.
 
+**Day sheet:** tapping a past day or today in the calendar opens a bottom sheet (same style as the habit sheet) titled with the date, listing that day's habits using the same cards as the Today view (same tap cycle, quick-adds and notes). Edits apply to that day and update the calendar live. Future days and days before any habit existed aren't tappable; the habit name isn't editable from this sheet.
+
 ## Layout
 
 - Single column, mobile-first, no desktop breakpoints

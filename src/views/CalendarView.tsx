@@ -4,7 +4,8 @@ import { IconCheck, IconX, IconChevronLeft, IconChevronRight } from '@tabler/ico
 import { useAppState } from '../lib/store'
 import { toDateKey, todayKey, monthGrid, shiftMonth, WEEKDAY_LABELS } from '../lib/dates'
 import { isDayComplete, isDayFailed } from '../lib/streak'
-import type { Task } from '../lib/types'
+import { DaySheet } from '../components/DaySheet'
+import type { DateKey, Task } from '../lib/types'
 import './CalendarView.css'
 
 type Tone = 'done' | 'missed' | 'pending'
@@ -46,6 +47,7 @@ export function CalendarView() {
   const cells = monthGrid(anchor)
   const tasks = state.tasks.filter((t) => !t.archived)
   const today = todayKey()
+  const [openDay, setOpenDay] = useState<DateKey | null>(null)
 
   return (
     <div>
@@ -90,9 +92,12 @@ export function CalendarView() {
                 return isDayFailed(t, v) || (isPast && !isDayComplete(t, v))
               })
 
+              const Cell = dayTasks.length > 0 ? 'button' : 'div'
+
               return (
-                <div
+                <Cell
                   key={key}
+                  {...(Cell === 'button' && { type: 'button' as const, onClick: () => setOpenDay(key) })}
                   className={`cal-day${allDone ? ' cal-day--done' : ''}${missed ? ' cal-day--missed' : ''}${isFuture ? ' cal-day--future' : ''}`}
                 >
                   <span className={`cal-date${isToday ? ' cal-date--today' : ''}`}>{day.getDate()}</span>
@@ -105,12 +110,14 @@ export function CalendarView() {
                       isPast={isPast}
                     />
                   ))}
-                </div>
+                </Cell>
               )
             })}
           </div>
         </>
       )}
+
+      {openDay && <DaySheet dateKey={openDay} onClose={() => setOpenDay(null)} />}
     </div>
   )
 }

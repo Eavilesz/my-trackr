@@ -1,12 +1,10 @@
 import { useState } from 'react'
 import { format } from 'date-fns'
 import { IconPlus } from '@tabler/icons-react'
-import { BinaryTaskCard } from '../components/BinaryTaskCard'
-import { QuantityTaskCard } from '../components/QuantityTaskCard'
+import { DayHabits } from '../components/DayHabits'
 import { TaskSheet } from '../components/TaskSheet'
-import { useAppState, cycleBinary, addToLog, setLog, setNote, getLog, getNote } from '../lib/store'
+import { useAppState } from '../lib/store'
 import { todayKey } from '../lib/dates'
-import { currentStreak } from '../lib/streak'
 import type { Task } from '../lib/types'
 import './TodayView.css'
 
@@ -38,35 +36,7 @@ export function TodayView() {
         <p className="today-empty">No habits yet — add one to get started.</p>
       )}
 
-      <div className="today-list">
-        {tasks.map((task) => {
-          if (task.type === 'binary') {
-            return (
-              <BinaryTaskCard
-                key={task.id}
-                task={task}
-                value={getLog(key, task.id)}
-                streak={currentStreak(state, task)}
-                note={getNote(key, task.id)}
-                onNoteChange={(text) => setNote(key, task.id, text)}
-                onToggle={() => cycleBinary(key, task.id)}
-                onEdit={() => setEditingTask(task)}
-              />
-            )
-          }
-          const value = getLog(key, task.id)
-          return (
-            <QuantityTaskCard
-              key={task.id}
-              task={task}
-              value={value}
-              onAdd={(amount) => addToLog(key, task.id, amount)}
-              onComplete={() => setLog(key, task.id, value >= task.goal ? 0 : task.goal)}
-              onEdit={() => setEditingTask(task)}
-            />
-          )
-        })}
-      </div>
+      <DayHabits dateKey={key} tasks={tasks} onEdit={setEditingTask} />
 
       {showAdd && <TaskSheet onClose={() => setShowAdd(false)} />}
       {editingTask && (
