@@ -50,7 +50,7 @@ Tokens: `--ease-out` (default), `--ease-spring` (small overshoot for number tick
 
 **Binary habit:** surface card. 40px square check button on the left, cycling unmarked (outlined) → done (blue fill + ✓, glow) → failed (red fill + ✕) → unmarked. A 3px left state bar and tinted background reflect the state. Name 15px/600 (with an optional 16px Tabler outline icon, tinted by state), subtext "N day streak" with N in mono. Failed habits show "Add note" (max 30 chars); the note shows in the calendar's red chip; leaving the failed state clears it. Tapping the name opens the edit sheet.
 
-**Quantity habit:** 24px square check, name, then `value / goal unit` in mono (value in amber, blue once met). 6px square-ended track; quick-add chips are square, mono, outlined, flashing amber on press; "Other" opens a prompt.
+**Quantity habit:** 24px square check, name, then `value / goal unit` in mono (value in amber, blue once met). 6px square-ended track; quick-add chips are square, mono, outlined, flashing amber on press. "Other" swaps the chips for a custom summing keypad (`AmountPad.tsx`): numpad with a tall amber "+", backspace, C and decimal point (max 2 decimals). The display shows the expression (`20 + 35 + 10`) and, once there's a "+", the running total; the full-width "Add N unit" button submits the sum. Works with a hardware keyboard too (digits, +, Backspace, Enter, Escape). It's a div, not an input, so the iOS keyboard never opens over it. Never use `window.prompt`/`confirm`: iOS home-screen apps don't show them.
 
 **Icons:** set in `src/lib/icons.ts`. A habit stores only the icon id, so ids must stay stable. Picker is a 5×2 grid of square tiles; tap the selected one again to clear.
 

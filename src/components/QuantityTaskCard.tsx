@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import type { QuantityTask } from '../lib/types'
 import { TaskName } from './TaskName'
 import { Burst, CheckMark } from './Marks'
+import { AmountPad } from './AmountPad'
 import './TaskCard.css'
 
 type Props = {
@@ -23,6 +24,8 @@ export function QuantityTaskCard({ task, value, onAdd, onComplete, onEdit }: Pro
   const [floaters, setFloaters] = useState<Floater[]>([])
   const [touched, setTouched] = useState(false)
   const nextFloaterId = useRef(0)
+  // Inline "Other" keypad. Not window.prompt: iOS home-screen apps never show it.
+  const [customOpen, setCustomOpen] = useState(false)
 
   function add(amount: number) {
     if (value < task.goal && value + amount >= task.goal) setCelebration((c) => c + 1)
@@ -82,24 +85,27 @@ export function QuantityTaskCard({ task, value, onAdd, onComplete, onEdit }: Pro
           {celebrating && <span key={celebration} className="quantity-shine" />}
         </div>
       </div>
-      <div className="quantity-chips">
-        {task.quickAdds.map((amount) => (
-          <button key={amount} type="button" className="quantity-chip" onClick={() => add(amount)}>
-            +{amount} {task.unit}
-          </button>
-        ))}
-        <button
-          type="button"
-          className="quantity-chip quantity-chip--other"
-          onClick={() => {
-            const input = window.prompt(`Add how much ${task.unit}?`)
-            const amount = Number(input)
-            if (input && Number.isFinite(amount) && amount !== 0) add(amount)
+      {customOpen ? (
+        <AmountPad
+          unit={task.unit}
+          onSubmit={(amount) => {
+            add(amount)
+            setCustomOpen(false)
           }}
-        >
-          Other
-        </button>
-      </div>
+          onCancel={() => setCustomOpen(false)}
+        />
+      ) : (
+        <div className="quantity-chips">
+          {task.quickAdds.map((amount) => (
+            <button key={amount} type="button" className="quantity-chip" onClick={() => add(amount)}>
+              +{amount} {task.unit}
+            </button>
+          ))}
+          <button type="button" className="quantity-chip quantity-chip--other" onClick={() => setCustomOpen(true)}>
+            Other
+          </button>
+        </div>
+      )}
     </div>
   )
 }

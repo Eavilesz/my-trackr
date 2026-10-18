@@ -1,0 +1,209 @@
+.amount-pad {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+  outline: none;
+  animation: rise-in var(--dur) var(--ease-out);
+}
+
+/* Display: the typed expression, then the running total once there's a "+". */
+.amount-display {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 10px 12px;
+  min-height: 64px;
+  justify-content: center;
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
+  font-family: var(--font-mono);
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+
+.amount-pad:focus-visible .amount-display {
+  border-color: var(--blue-text);
+}
+
+.amount-expr {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: baseline;
+  max-width: 100%;
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text);
+  word-break: break-all;
+}
+
+.amount-term {
+  animation: term-in var(--dur-fast) var(--ease-out);
+}
+
+@keyframes term-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.amount-op {
+  margin: 0 8px;
+  color: var(--amber-text);
+}
+
+.amount-placeholder {
+  color: var(--text-faint);
+}
+
+.amount-caret {
+  align-self: center;
+  width: 2px;
+  height: 22px;
+  margin-left: 2px;
+  background: var(--blue-text);
+  animation: caret-blink 1s steps(1) infinite;
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.amount-total {
+  font-size: 13px;
+  color: var(--text-soft);
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition:
+    max-height var(--dur) var(--ease-out),
+    opacity var(--dur) var(--ease-out);
+}
+
+.amount-total.is-visible {
+  max-height: 20px;
+  opacity: 1;
+}
+
+.amount-total-num {
+  display: inline-block;
+  font-weight: 500;
+  color: var(--amber-text);
+  animation: bump 260ms var(--ease-spring);
+}
+
+/* Classic numpad: tall "+" on the right, wide "0". */
+.amount-keys {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 46px;
+  gap: 4px;
+  grid-template-areas:
+    'k7 k8 k9 back'
+    'k4 k5 k6 plus'
+    'k1 k2 k3 plus'
+    'k0 k0 dot clear';
+}
+
+.amount-key {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 19px;
+  font-weight: 500;
+  cursor: pointer;
+  /* No double-tap zoom when typing fast on iOS. */
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  transition:
+    background-color 260ms var(--ease-out),
+    border-color 260ms var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+/* Instant flash on press, slower fade back on release. */
+.amount-key:active {
+  transform: scale(0.94);
+  background: var(--surface-3);
+  border-color: var(--line-strong);
+  transition-duration: 0ms, 0ms, var(--dur-fast);
+}
+
+.amount-key--fn {
+  color: var(--text-soft);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.amount-key--plus {
+  background: var(--amber-bg);
+  border-color: #5a4010;
+  color: var(--amber-text);
+  font-size: 26px;
+}
+
+.amount-key--plus:active {
+  background: #4d380d;
+  border-color: var(--amber);
+}
+
+.amount-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.amount-cancel,
+.amount-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  border: 1px solid var(--line-strong);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    opacity var(--dur-fast) var(--ease-out);
+}
+
+.amount-cancel {
+  flex: none;
+  width: 46px;
+  background: var(--surface-2);
+  color: var(--text-soft);
+}
+
+.amount-submit {
+  flex: 1;
+  border-color: var(--blue);
+  background: var(--blue);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.amount-submit:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.amount-cancel:active,
+.amount-submit:not(:disabled):active {
+  transform: scale(0.97);
+}
