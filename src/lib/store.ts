@@ -1,16 +1,16 @@
 import { useSyncExternalStore } from 'react'
-import type { AppState, Task, DateKey } from './types'
+import { BINARY_DONE, BINARY_FAILED, type AppState, type Task, type DateKey } from './types'
 
 const STORAGE_KEY = 'my-trackr:state'
 
-const EMPTY_STATE: AppState = { tasks: [], logs: {} }
+const EMPTY_STATE: AppState = { tasks: [], logs: {}, notes: {} }
 
 function load(): AppState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return EMPTY_STATE
     const parsed = JSON.parse(raw)
-    return { tasks: parsed.tasks ?? [], logs: parsed.logs ?? {} }
+    return { tasks: parsed.tasks ?? [], logs: parsed.logs ?? {}, notes: parsed.notes ?? {} }
   } catch {
     // Corrupt or inaccessible storage (e.g. private mode) — fall back rather than crash.
     return EMPTY_STATE
@@ -66,7 +66,12 @@ export function deleteTask(id: string) {
     const { [id]: _removed, ...rest } = entries
     logs[day] = rest
   }
-  state = { tasks: state.tasks.filter((t) => t.id !== id), logs }
+  const notes: typeof state.notes = {}
+  for (const [day, entries] of Object.entries(state.notes)) {
+    const { [id]: _removed, ...rest } = entries
+    notes[day] = rest
+  }
+  state = { tasks: state.tasks.filter((t) => t.id !== id), logs, notes }
   persist()
 }
 
@@ -88,11 +93,31 @@ export function addToLog(dateKey: DateKey, taskId: string, delta: number) {
   setLog(dateKey, taskId, Math.max(0, current + delta))
 }
 
-export function toggleBinary(dateKey: DateKey, taskId: string) {
+/** Cycles a binary habit: unmarked → done → failed → unmarked. */
+export function cycleBinary(dateKey: DateKey, taskId: string) {
   const current = state.logs[dateKey]?.[taskId] ?? 0
-  setLog(dateKey, taskId, current > 0 ? 0 : 1)
+  const next = current === BINARY_DONE ? BINARY_FAILED : current === BINARY_FAILED ? 0 : BINARY_DONE
+  // Notes only make sense on a failed day; leaving that state wipes it.
+  if (next !== BINARY_FAILED) setNote(dateKey, taskId, '')
+  setLog(dateKey, taskId, next)
 }
 
 export function getLog(dateKey: DateKey, taskId: string): number {
   return state.logs[dateKey]?.[taskId] ?? 0
+}
+
+/** Set (or clear, when empty) a task's note for a given day. */
+export function setNote(dateKey: DateKey, taskId: string, text: string) {
+  const dayNotes = { ...(state.notes[dateKey] ?? {}) }
+  if (text) {
+    dayNotes[taskId] = text
+  } else {
+    delete dayNotes[taskId]
+  }
+  state = { ...state, notes: { ...state.notes, [dateKey]: dayNotes } }
+  persist()
+}
+
+export function getNote(dateKey: DateKey, taskId: string): string {
+  return state.notes[dateKey]?.[taskId] ?? ''
 }

@@ -4,7 +4,7 @@ import { IconPlus } from '@tabler/icons-react'
 import { BinaryTaskCard } from '../components/BinaryTaskCard'
 import { QuantityTaskCard } from '../components/QuantityTaskCard'
 import { TaskSheet } from '../components/TaskSheet'
-import { useAppState, toggleBinary, addToLog, setLog, getLog } from '../lib/store'
+import { useAppState, cycleBinary, addToLog, setLog, setNote, getLog, getNote } from '../lib/store'
 import { todayKey } from '../lib/dates'
 import { currentStreak } from '../lib/streak'
 import type { Task } from '../lib/types'
@@ -41,14 +41,15 @@ export function TodayView() {
       <div className="today-list">
         {tasks.map((task) => {
           if (task.type === 'binary') {
-            const done = getLog(key, task.id) > 0
             return (
               <BinaryTaskCard
                 key={task.id}
                 task={task}
-                done={done}
+                value={getLog(key, task.id)}
                 streak={currentStreak(state, task)}
-                onToggle={() => toggleBinary(key, task.id)}
+                note={getNote(key, task.id)}
+                onNoteChange={(text) => setNote(key, task.id, text)}
+                onToggle={() => cycleBinary(key, task.id)}
                 onEdit={() => setEditingTask(task)}
               />
             )

@@ -1,4 +1,4 @@
-import { IconCheck, IconPencil } from '@tabler/icons-react'
+import { IconCheck } from '@tabler/icons-react'
 import type { QuantityTask } from '../lib/types'
 import './TaskCard.css'
 
@@ -26,18 +26,12 @@ export function QuantityTaskCard({ task, value, onAdd, onComplete, onEdit }: Pro
         >
           {done && <IconCheck size={14} stroke={3} />}
         </button>
-        <span className="task-label quantity-name">{task.name}</span>
+        <button type="button" className="task-label task-name-btn quantity-name" onClick={onEdit}>
+          {task.name}
+        </button>
         <span className="quantity-figure">
           {value} / {task.goal} {task.unit}
         </span>
-        <button
-          type="button"
-          className="task-edit"
-          onClick={onEdit}
-          aria-label={`Edit "${task.name}"`}
-        >
-          <IconPencil size={16} />
-        </button>
       </div>
       <div className="quantity-track">
         <div className="quantity-fill" style={{ width: `${pct}%` }} />

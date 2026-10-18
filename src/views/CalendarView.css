@@ -52,14 +52,18 @@
   flex-direction: column;
   gap: 3px;
   min-height: 76px;
-  padding: 4px 2px;
+  padding: 4px 1px;
   background: var(--card);
   border: 0.5px solid var(--line);
   border-radius: 8px;
 }
 
 .cal-day--done {
-  background: var(--moss-bg);
+  background: var(--moss-tint);
+}
+
+.cal-day--missed {
+  background: var(--rust-tint);
 }
 
 .cal-date {
@@ -90,9 +94,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: 1px;
   height: 18px;
-  padding: 0 2px;
+  padding: 0 1px;
   border-radius: 5px;
   overflow: hidden;
 }
@@ -102,19 +106,27 @@
 }
 
 .cal-chip--done {
-  background: var(--moss);
-  color: #fff;
+  background: var(--moss-bg);
+  color: var(--moss);
 }
 
-.cal-chip--partial {
+.cal-chip--missed {
+  background: var(--rust-bg);
+  color: var(--rust-text);
+}
+
+.cal-chip--pending {
   background: var(--ochre-bg);
   color: var(--ochre-text);
 }
 
 .cal-chip-text {
-  font-family: var(--font-mono);
   font-size: 10px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.cal-chip-text--mono {
+  font-family: var(--font-mono);
 }

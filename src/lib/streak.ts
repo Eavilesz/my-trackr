@@ -1,11 +1,16 @@
 import { addDays } from 'date-fns'
-import type { AppState, Task } from './types'
+import { BINARY_DONE, BINARY_FAILED, type AppState, type Task } from './types'
 import { toDateKey } from './dates'
 
-/** True if the task's goal was met that day (binary: logged; quantity: value >= goal). */
+/** True if the task's goal was met that day (binary: marked done; quantity: value >= goal). */
 export function isDayComplete(task: Task, value: number): boolean {
-  if (task.type === 'binary') return value > 0
+  if (task.type === 'binary') return value === BINARY_DONE
   return value >= task.goal
+}
+
+/** True if a binary habit was explicitly marked as not done that day. */
+export function isDayFailed(task: Task, value: number): boolean {
+  return task.type === 'binary' && value === BINARY_FAILED
 }
 
 /**

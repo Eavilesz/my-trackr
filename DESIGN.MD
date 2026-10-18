@@ -17,10 +17,11 @@ Habits are "cultivated" day by day. Progress doesn't read as an abstract percent
 | `--moss-bg`  | `#E1E9DD` | Light moss background (partial states)        |
 | `--ochre`    | `#B8863A` | Accent for quantity habits (fill bars, chips) |
 | `--ochre-bg` | `#F2E6D3` | Light ochre background (bar track)            |
+| `--rust`     | `#A8432F` | Missed habits (`--rust-bg` chips, `--rust-text` text, `--rust-tint` day cells) |
 | `--line`     | `#D9DCC9` | Borders and dividers (0.5px hairlines)        |
 | `#fff`       | white     | Card background over the paper                |
 
-Rule: moss = binary/completed. Ochre = quantity/progress. Don't mix meanings between colors.
+Rule: moss = completed. Rust = missed (past days only). Ochre = quantity/progress. Don't mix meanings between colors.
 
 ## Typography
 
@@ -32,8 +33,10 @@ Rule: moss = binary/completed. Ochre = quantity/progress. Don't mix meanings bet
 
 **Binary habit** (white card, 0.5px `--line` border, 14px radius)
 
-- 38px circle on the left: `--moss` fill + check icon when done, 2px `--line` border when not
+- 38px circle on the left, three states cycled by tapping: unmarked (2px `--line` border) → done (`--moss` fill + check) → failed (`--rust` fill + ✕) → unmarked
 - 15px/500 label in `--ink`, 12px subtext "6 day streak" in `--ink-soft`
+- Optional per-day note, only while the habit is in the failed state ("Add note" link under the subtext, inline input, max 30 chars); shown in the red calendar chip for that day. Leaving the failed state clears the note
+- Tapping the habit name opens the edit sheet (no pencil icon, on both binary and quantity cards)
 
 **Quantity habit** (same base card)
 
@@ -43,7 +46,7 @@ Rule: moss = binary/completed. Ochre = quantity/progress. Don't mix meanings bet
 
 **Bottom tab bar:** Today / Month, 18px Tabler outline icon above the label, active in `--ink`, inactive in `--ink-soft`
 
-**Calendar view:** Monday-start month grid, one card-colored cell per day. Each cell shows the date, then one chip per habit in the same order as the habit list (a legend above the grid names them). Binary habit = moss chip with a check when done, blank otherwise. Quantity habit = the logged amount in mono (e.g. `158 g`); moss with a check when the goal was hit, `--ochre-bg` when logged but under goal. A day with every habit done gets a `--moss-bg` cell. Future days show only the date; habits only appear from the day they were created. Today's date sits in an `--ink` circle.
+**Calendar view:** Monday-start month grid, one card-colored cell per day. Each cell shows the date, then one chip per habit in the same order as the habit list (a legend above the grid names them). Chips: done = `--moss-bg` with a check; missed (past days only) = `--rust-bg` with a ✕. A failed binary chip (or an unmarked one on a past day) shows the day's note instead of the ✕ when there is one. Quantity chips show the logged amount in mono (e.g. `158 g`). Today's unfinished habits are `--ochre-bg` (or blank when nothing is logged). A day with every habit done gets a `--moss-tint` cell; a past day with any miss gets `--rust-tint`. Future days show only the date; habits only count from the day they were created. Today's date sits in an `--ink` circle.
 
 ## Layout
 

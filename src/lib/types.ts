@@ -22,13 +22,21 @@ export type QuantityTask = TaskBase & {
 
 export type Task = BinaryTask | QuantityTask
 
-/** Per-task, per-day value. Binary: 0 or 1. Quantity: accumulated amount. */
+/** Binary habit values: unmarked (0, or absent), done, or explicitly failed. */
+export const BINARY_DONE = 1
+export const BINARY_FAILED = 2
+
+/** Per-task, per-day value. Binary: 0 / BINARY_DONE / BINARY_FAILED. Quantity: accumulated amount. */
 export type LogEntry = number
 
 /** logs[dateKey][taskId] = value */
 export type Logs = Record<DateKey, Record<string, LogEntry>>
 
+/** notes[dateKey][taskId] = free-text note for that habit on that day */
+export type Notes = Record<DateKey, Record<string, string>>
+
 export type AppState = {
   tasks: Task[]
   logs: Logs
+  notes: Notes
 }
