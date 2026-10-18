@@ -11,11 +11,13 @@ import './CalendarView.css'
 
 type Tone = 'done' | 'missed' | 'pending'
 
-function Chip({ tone, icon, text, mono }: { tone: Tone; icon?: ReactNode; text?: string; mono?: boolean }) {
+type TextKind = 'value' | 'note'
+
+function Chip({ tone, icon, text, kind }: { tone: Tone; icon?: ReactNode; text?: string; kind?: TextKind }) {
   return (
     <span className={`cal-chip cal-chip--${tone}`}>
       {icon}
-      {text && <span className={`cal-chip-text${mono ? ' cal-chip-text--mono' : ''}`}>{text}</span>}
+      {text && <span className={`cal-chip-text cal-chip-text--${kind}`}>{text}</span>}
     </span>
   )
 }
@@ -26,20 +28,22 @@ function Chip({ tone, icon, text, mono }: { tone: Tone; icon?: ReactNode; text?:
  */
 function HabitChip({ task, value, note, isPast }: { task: Task; value: number; note: string; isPast: boolean }) {
   const done = isDayComplete(task, value)
+  const check = <IconCheck size={10} stroke={2.5} />
+  const cross = <IconX size={10} stroke={2.5} />
 
   if (task.type === 'binary') {
-    if (done) return <Chip tone="done" icon={<IconCheck size={11} stroke={2.5} />} />
+    if (done) return <Chip tone="done" icon={check} />
     // Explicitly failed (even today), or left unmarked on a past day.
     if (isDayFailed(task, value) || isPast) {
-      return <Chip tone="missed" icon={note ? undefined : <IconX size={11} stroke={2.5} />} text={note} />
+      return <Chip tone="missed" icon={note ? undefined : cross} text={note} kind="note" />
     }
     return <span className="cal-chip cal-chip--empty" />
   }
 
-  const text = `${value} ${task.unit}`
-  if (done) return <Chip tone="done" icon={<IconCheck size={9} stroke={3} />} text={text} mono />
-  if (isPast) return <Chip tone="missed" icon={<IconX size={9} stroke={3} />} text={text} mono />
-  return value > 0 ? <Chip tone="pending" text={text} mono /> : <span className="cal-chip cal-chip--empty" />
+  const text = `${value}${task.unit}`
+  if (done) return <Chip tone="done" text={text} kind="value" />
+  if (isPast) return <Chip tone="missed" icon={cross} text={text} kind="value" />
+  return value > 0 ? <Chip tone="pending" text={text} kind="value" /> : <span className="cal-chip cal-chip--empty" />
 }
 
 export function CalendarView() {

@@ -132,15 +132,24 @@ button.cal-day {
   color: var(--ochre-text);
 }
 
+.cal-chip svg {
+  flex: none;
+}
+
 .cal-chip-text {
-  font-size: 10px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.cal-chip-text--mono {
+.cal-chip-text--value {
   font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+/* Notes are free text and need the room, so they're set smaller than values. */
+.cal-chip-text--note {
+  font-size: 8px;
 }
 
 /* Legend entries reuse TaskName, which is styled for cards — tone it down here. */
