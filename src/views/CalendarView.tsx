@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useState, type CSSProperties, type ReactNode } from 'react'
 import { format } from 'date-fns'
 import { IconCheck, IconX, IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
 import { useAppState } from '../lib/store'
@@ -53,23 +53,32 @@ export function CalendarView() {
   const tasks = state.tasks.filter((t) => !t.archived)
   const today = todayKey()
   const [openDay, setOpenDay] = useState<DateKey | null>(null)
+  // Which way the grid slides in when changing months.
+  const [direction, setDirection] = useState<'prev' | 'next'>('next')
+
+  function goMonth(delta: number) {
+    setDirection(delta < 0 ? 'prev' : 'next')
+    setAnchor((d) => shiftMonth(d, delta))
+  }
 
   return (
     <div>
       <div className="cal-header">
         <p className="cal-label">Month</p>
         <div className="cal-nav">
-          <button type="button" onClick={() => setAnchor((d) => shiftMonth(d, -1))} aria-label="Previous month">
+          <button type="button" onClick={() => goMonth(-1)} aria-label="Previous month">
             <IconChevronLeft size={18} />
           </button>
-          <span>{format(anchor, 'MMMM yyyy')}</span>
-          <button type="button" onClick={() => setAnchor((d) => shiftMonth(d, 1))} aria-label="Next month">
+          <span key={format(anchor, 'yyyy-MM')} className={`cal-month cal-month--${direction}`}>
+            {format(anchor, 'MMMM yyyy')}
+          </span>
+          <button type="button" onClick={() => goMonth(1)} aria-label="Next month">
             <IconChevronRight size={18} />
           </button>
         </div>
       </div>
 
-      {tasks.length === 0 && <p className="today-empty">No habits yet — add one to get started.</p>}
+      {tasks.length === 0 && <p className="today-empty cal-empty">No habits yet — add one to get started.</p>}
 
       {tasks.length > 0 && (
         <>
@@ -80,10 +89,14 @@ export function CalendarView() {
             ))}
           </p>
 
-          <div className="cal-grid">
+          <div className="cal-weekdays">
             {WEEKDAY_LABELS.map((label, i) => (
               <div key={i} className="cal-weekday">{label}</div>
             ))}
+          </div>
+
+          {/* Keyed by month so navigating replays the slide-in. */}
+          <div key={format(anchor, 'yyyy-MM')} className={`cal-grid cal-grid--${direction}`}>
 
             {cells.map((day, i) => {
               if (!day) return <div key={`pad-${i}`} />
@@ -106,7 +119,8 @@ export function CalendarView() {
                 <Cell
                   key={key}
                   {...(Cell === 'button' && { type: 'button' as const, onClick: () => setOpenDay(key) })}
-                  className={`cal-day${allDone ? ' cal-day--done' : ''}${missed ? ' cal-day--missed' : ''}${isFuture ? ' cal-day--future' : ''}`}
+                  style={{ '--i': i } as CSSProperties}
+                  className={`cal-day${isToday ? ' cal-day--today' : ''}${allDone ? ' cal-day--done' : ''}${missed ? ' cal-day--missed' : ''}${isFuture ? ' cal-day--future' : ''}`}
                 >
                   <span className={`cal-date${isToday ? ' cal-date--today' : ''}`}>{day.getDate()}</span>
                   {dayTasks.map((t) => (

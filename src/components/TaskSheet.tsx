@@ -1,11 +1,10 @@
 import { useState } from 'react'
-import { IconX } from '@tabler/icons-react'
 import { addTask, updateTask, deleteTask } from '../lib/store'
 import { newId } from '../lib/id'
 import { todayKey } from '../lib/dates'
 import { HABIT_ICONS } from '../lib/icons'
 import type { Task } from '../lib/types'
-import './TaskSheet.css'
+import { Sheet } from './Sheet'
 
 type Props = {
   /** Task being edited, or undefined to create a new one. */
@@ -24,7 +23,7 @@ export function TaskSheet({ task, onClose }: Props) {
     task?.type === 'quantity' ? task.quickAdds.join(', ') : '10, 20',
   )
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent, close: () => void) {
     e.preventDefault()
     const trimmedName = name.trim()
     if (!trimmedName) return
@@ -57,114 +56,109 @@ export function TaskSheet({ task, onClose }: Props) {
       }
     }
 
-    onClose()
+    close()
   }
 
-  function handleDelete() {
+  function handleDelete(close: () => void) {
     if (!task) return
     if (!window.confirm(`Delete "${task.name}"? This removes its full history.`)) return
     deleteTask(task.id)
-    onClose()
+    close()
   }
 
   return (
-    <div className="sheet-backdrop" onClick={onClose}>
-      <form className="sheet" onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit}>
-        <div className="sheet-header">
-          <h2>{isEditing ? 'Edit habit' : 'New habit'}</h2>
-          <button type="button" className="sheet-close" onClick={onClose} aria-label="Close">
-            <IconX size={18} />
-          </button>
-        </div>
+    <Sheet title={isEditing ? 'Edit habit' : 'New habit'} onClose={onClose}>
+      {(close) => (
+        <form className="sheet-form" onSubmit={(e) => handleSubmit(e, close)}>
+          <label className="sheet-field">
+            <span>Name</span>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Meditate"
+              autoFocus
+            />
+          </label>
 
-        <label className="sheet-field">
-          <span>Name</span>
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. Meditate"
-            autoFocus
-          />
-        </label>
-
-        <div className="sheet-field">
-          <span>Icon (optional)</span>
-          <div className="icon-picker">
-            {HABIT_ICONS.map(({ id, label, Icon }) => (
-              <button
-                key={id}
-                type="button"
-                className={icon === id ? 'active' : ''}
-                onClick={() => setIcon(icon === id ? undefined : id)}
-                aria-label={label}
-                aria-pressed={icon === id}
-              >
-                <Icon size={20} stroke={1.75} />
-              </button>
-            ))}
+          <div className="sheet-field">
+            <span>Icon (optional)</span>
+            <div className="icon-picker">
+              {HABIT_ICONS.map(({ id, label, Icon }) => (
+                <button
+                  key={id}
+                  type="button"
+                  className={icon === id ? 'active' : ''}
+                  onClick={() => setIcon(icon === id ? undefined : id)}
+                  aria-label={label}
+                  aria-pressed={icon === id}
+                >
+                  <Icon size={20} stroke={1.75} />
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
 
-        <div className="sheet-type-toggle">
-          <button
-            type="button"
-            className={type === 'binary' ? 'active' : ''}
-            onClick={() => setType('binary')}
-          >
-            Yes / no
-          </button>
-          <button
-            type="button"
-            className={type === 'quantity' ? 'active' : ''}
-            onClick={() => setType('quantity')}
-          >
-            Amount per day
-          </button>
-        </div>
+          <div className="sheet-type-toggle" data-value={type}>
+            <button
+              type="button"
+              className={type === 'binary' ? 'active' : ''}
+              onClick={() => setType('binary')}
+            >
+              Yes / no
+            </button>
+            <button
+              type="button"
+              className={type === 'quantity' ? 'active' : ''}
+              onClick={() => setType('quantity')}
+            >
+              Amount per day
+            </button>
+          </div>
 
-        {type === 'quantity' && (
-          <>
-            <div className="sheet-row">
+          {type === 'quantity' && (
+            <div className="sheet-quantity-fields">
+              <div className="sheet-row">
+                <label className="sheet-field">
+                  <span>Daily goal</span>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    value={goal}
+                    onChange={(e) => setGoal(e.target.value)}
+                    placeholder="150"
+                  />
+                </label>
+                <label className="sheet-field">
+                  <span>Unit</span>
+                  <input
+                    value={unit}
+                    onChange={(e) => setUnit(e.target.value)}
+                    placeholder="g"
+                  />
+                </label>
+              </div>
               <label className="sheet-field">
-                <span>Daily goal</span>
+                <span>Quick-add amounts (comma separated)</span>
                 <input
-                  type="number"
-                  inputMode="decimal"
-                  value={goal}
-                  onChange={(e) => setGoal(e.target.value)}
-                  placeholder="150"
-                />
-              </label>
-              <label className="sheet-field">
-                <span>Unit</span>
-                <input
-                  value={unit}
-                  onChange={(e) => setUnit(e.target.value)}
-                  placeholder="g"
+                  value={quickAdds}
+                  onChange={(e) => setQuickAdds(e.target.value)}
+                  placeholder="10, 20"
                 />
               </label>
             </div>
-            <label className="sheet-field">
-              <span>Quick-add amounts (comma separated)</span>
-              <input
-                value={quickAdds}
-                onChange={(e) => setQuickAdds(e.target.value)}
-                placeholder="10, 20"
-              />
-            </label>
-          </>
-        )}
+          )}
 
-        <button type="submit" className="sheet-submit">
-          {isEditing ? 'Save changes' : 'Add habit'}
-        </button>
-
-        {isEditing && (
-          <button type="button" className="sheet-delete" onClick={handleDelete}>
-            Delete habit
+          <button type="submit" className="sheet-submit">
+            {isEditing ? 'Save changes' : 'Add habit'}
           </button>
-        )}
-      </form>
-    </div>
+
+          {isEditing && (
+            <button type="button" className="sheet-delete" onClick={() => handleDelete(close)}>
+              Delete habit
+            </button>
+          )}
+        </form>
+      )}
+    </Sheet>
   )
 }

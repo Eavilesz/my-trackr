@@ -1,26 +1,49 @@
 :root {
-  --paper: #eef0e6;
-  --ink: #1e231c;
-  --ink-soft: #5b6156;
-  --moss: #3f6b4a;
-  --moss-bg: #e1e9dd;
-  --ochre: #b8863a;
-  --ochre-bg: #f2e6d3;
-  --ochre-text: #633806;
-  --moss-tint: #f1f5ee;
-  --rust: #a8432f;
-  --rust-bg: #f3d6cf;
-  --rust-text: #7a2417;
-  --rust-tint: #faf0ed;
-  --line: #d9dcc9;
-  --card: #ffffff;
+  color-scheme: dark;
 
-  --radius-card: 14px;
-  --radius-lg: 16px;
-  --radius-chip: 8px;
-  --gap-card: 10px;
-  --pad-card: 14px;
+  /* Surfaces, darkest to lightest */
+  --bg: #07090d;
+  --surface: #0e131b;
+  --surface-2: #151c27;
+  --surface-3: #1d2635;
+  --line: #222c3b;
+  --line-strong: #344259;
+
+  /* Text */
+  --text: #eaf0f8;
+  --text-soft: #8d9ab0;
+  --text-faint: #5a6679;
+
+  /* Blue — primary, and "done" */
+  --blue: #2f6bf0;
+  --blue-hover: #4079f5;
+  --blue-text: #7aa7ff;
+  --blue-bg: #12244a;
+  --blue-tint: #0b1426;
+  --blue-glow: rgba(47, 107, 240, 0.45);
+
+  /* Amber — quantity still in progress (deliberately neither green nor red) */
+  --amber: #f0a020;
+  --amber-text: #ffc061;
+  --amber-bg: #3a2908;
+
+  /* Red — missed / failed */
+  --red: #e5484d;
+  --red-text: #ff8b90;
+  --red-bg: #3a1419;
+  --red-tint: #150b0f;
+
+  --gap-card: 8px;
+  --pad-card: 16px;
 
   --font-ui: 'Manrope', system-ui, -apple-system, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', monospace;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast: 140ms;
+  --dur: 240ms;
+  --dur-slow: 420ms;
 }

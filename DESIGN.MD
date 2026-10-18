@@ -4,55 +4,68 @@ Design guide for the app. Use it as context in every Claude Code session to keep
 
 ## Concept
 
-Habits are "cultivated" day by day. Progress doesn't read as an abstract percentage — it reads as a **fill** toward a goal, a container gradually completing. Minimalist, warm style, single column, built for daily use on iPhone (no desktop view).
+Dark, cool and precise. Habits are marked off with crisp, satisfying feedback: every completion should *feel* good — fast (under ~0.5s), smooth, never in the way. Single column, built for daily use on iPhone (no desktop view).
 
-## Colors
+## Colors (`src/styles/tokens.css`)
 
-| Token        | Hex       | Use                                           |
-| ------------ | --------- | --------------------------------------------- |
-| `--paper`    | `#EEF0E6` | General background (sage paper)               |
-| `--ink`      | `#1E231C` | Primary text                                  |
-| `--ink-soft` | `#5B6156` | Secondary text (labels, metadata)             |
-| `--moss`     | `#3F6B4A` | Accent for completed binary habits            |
-| `--moss-bg`  | `#E1E9DD` | Light moss background (partial states)        |
-| `--ochre`    | `#B8863A` | Accent for quantity habits (fill bars, chips) |
-| `--ochre-bg` | `#F2E6D3` | Light ochre background (bar track)            |
-| `--rust`     | `#A8432F` | Missed habits (`--rust-bg` chips, `--rust-text` text, `--rust-tint` day cells) |
-| `--line`     | `#D9DCC9` | Borders and dividers (0.5px hairlines)        |
-| `#fff`       | white     | Card background over the paper                |
+| Token                                   | Hex                   | Use                                                   |
+| --------------------------------------- | --------------------- | ----------------------------------------------------- |
+| `--bg`                                  | `#07090D`             | Page background                                       |
+| `--surface` / `-2` / `-3`               | `#0E131B` → `#1D2635` | Cards / inputs & buttons / tracks & empty segments    |
+| `--line` / `--line-strong`              | `#222C3B` / `#344259` | Card borders / control borders                        |
+| `--text` / `--text-soft` / `--text-faint` | `#EAF0F8` / `#8D9AB0` / `#5A6679` | Primary / secondary / tertiary text      |
+| `--blue`                                | `#2F6BF0`             | Primary: fills, buttons, **done** (white text ≥ 4.5:1) |
+| `--blue-text`                           | `#7AA7FF`             | Blue used as text/icon/stroke on dark                 |
+| `--blue-bg` / `--blue-tint`             | `#12244A` / `#0B1426` | Done chips / done cards & calendar cells              |
+| `--amber` (`-text`, `-bg`)              | `#F0A020`             | Quantity **in progress** (fill bar, pending chips)    |
+| `--red` (`-text`, `-bg`, `-tint`)       | `#E5484D`             | **Missed / failed** (past days, failed binary)        |
 
-Rule: moss = completed. Rust = missed (past days only). Ochre = quantity/progress. Don't mix meanings between colors.
+Rule: blue = done. Red = missed. Amber = quantity still in progress, turning blue once the goal is met (never green-looking, so it can't read as success). Don't mix meanings.
+
+## Shape
+
+- **Sharp edges everywhere: no border-radius.** Check buttons, chips, the today marker and sheets are all square.
+- Borders are 1px. Shadows only as blue glow on "done" things and primary buttons, plus a soft lift on sheets.
 
 ## Typography
 
-- **General UI:** Manrope (weights 400 and 500 only)
-- **Numeric data** (grams, streaks, percentages): IBM Plex Mono or similar — tabular, for consistent digit alignment
-- Sentence case everywhere, no all-caps, no mid-sentence bold
+- **UI:** Manrope 400/500/600/700. Titles 700 with slight negative tracking; habit names 600.
+- **Eyebrow labels** (date above "Today", "Month", form field labels): 11px, 600, uppercase, `0.06–0.08em` tracking. Use sparingly, only for these.
+- **Numbers** (amounts, streak count, progress count, calendar dates): IBM Plex Mono.
+
+## Motion
+
+Tokens: `--ease-out` (default), `--ease-spring` (small overshoot for number ticks and icons), `--ease-in-out` (exits); `--dur-fast` 140ms, `--dur` 240ms, `--dur-slow` 420ms. `prefers-reduced-motion` collapses everything to 1ms (kept non-zero so `animationend` still fires).
+
+- **Completion animations only play after a tap**, never on first render. Binary cards track this with an `fx` state (`done` / `failed` / `cleared`); quantity cards with a `celebration` counter used as a React `key` to replay.
+- **Done:** button pop (scale 0.84 → 1.12 → 1), checkmark stroke draws in (`Marks.tsx`, `pathLength=1`), square ring + 4 corner sparks (`<Burst />`), a light sweep across the card, the left state bar grows in, streak number ticks up.
+- **Failed:** button shake, ✕ draws in stroke by stroke, red state bar.
+- **Quantity:** fill width eases over 520ms; each add floats "+N" up from the figure and bumps the value; crossing the goal plays the done celebration plus a shine through the bar.
+- **Press feedback:** buttons scale to ~0.9–0.98 on `:active`.
+- **Sheets** (`Sheet.tsx`): slide up + backdrop fade on open; slide down before unmounting (children get a `close()` that plays the exit). Portaled to `<body>`. Escape closes unless an input `preventDefault`s it.
+- **Navigation:** views rise in on tab switch; the tab bar's indicator slides; months slide in from the direction you navigated; cards and calendar cells stagger in via a `--i` index.
+- Entrance animations use `backwards` fill, not `both`: a lingering transform makes the element the containing block for `position: fixed`.
 
 ## Components
 
-**Binary habit** (white card, 0.5px `--line` border, 14px radius)
+**Binary habit:** surface card. 40px square check button on the left, cycling unmarked (outlined) → done (blue fill + ✓, glow) → failed (red fill + ✕) → unmarked. A 3px left state bar and tinted background reflect the state. Name 15px/600 (with an optional 16px Tabler outline icon, tinted by state), subtext "N day streak" with N in mono. Failed habits show "Add note" (max 30 chars); the note shows in the calendar's red chip; leaving the failed state clears it. Tapping the name opens the edit sheet.
 
-- 38px circle on the left, three states cycled by tapping: unmarked (2px `--line` border) → done (`--moss` fill + check) → failed (`--rust` fill + ✕) → unmarked
-- 15px/500 label in `--ink`, 12px subtext "6 day streak" in `--ink-soft`
-- Optional per-day note, only while the habit is in the failed state ("Add note" link under the subtext, inline input, max 30 chars); shown in the red calendar chip for that day. Leaving the failed state clears the note
-- Optional icon before the name (16px Tabler outline, `--ink-soft`), picked in the habit sheet from a 5×2 grid; tap the selected icon again to remove it. Set lives in `src/lib/icons.ts` (strength, running, cycling, stretching, nutrition, water, sleep, health, reading, focus). A habit stores only the icon id, so ids must stay stable. The calendar legend shows the same icons
-- Tapping the habit name opens the edit sheet (no pencil icon, on both binary and quantity cards)
+**Quantity habit:** 24px square check, name, then `value / goal unit` in mono (value in amber, blue once met). 6px square-ended track; quick-add chips are square, mono, outlined, flashing amber on press; "Other" opens a prompt.
 
-**Quantity habit** (same base card)
+**Icons:** set in `src/lib/icons.ts`. A habit stores only the icon id, so ids must stay stable. Picker is a 5×2 grid of square tiles; tap the selected one again to clear.
 
-- Header: label on the left, current/goal figure on the right in mono, e.g. `104 / 150 g`
-- Fill bar: 8px tall track in `--ochre-bg`, `--ochre` fill, 4px radius
-- Quick-add chips below: `--ochre-bg` background, dark text (`#633806`), 8px radius — e.g. "+10 g", "+20 g", "other"
+**Today header:** blue uppercase date eyebrow, 32px "Today", a square blue add button. Below it a segmented progress meter (one segment per habit, filling left to right) with a mono `done/total` count; label switches to "All done for today" with a glow when complete.
 
-**Bottom tab bar:** Today / Month, 18px Tabler outline icon above the label, active in `--ink`, inactive in `--ink-soft`
+**Tab bar:** sticky, translucent with blur, sliding 2px blue indicator on top. Active tab: text in `--text`, icon in `--blue-text`.
 
-**Calendar view:** Monday-start month grid, one card-colored cell per day. Each cell shows the date, then one chip per habit in the same order as the habit list (a legend above the grid names them). Chips carry no habit icon (too narrow; the legend above the grid has them). Done = `--moss-bg`; missed (past days or explicitly failed) = `--rust-bg`. Binary: ✓ when done, ✕ when failed, or the day's note (8px, smaller than other chip text) instead of the ✕ when there is one. Quantity: the logged amount in mono with no space before the unit (e.g. `158g`); a met goal is just the amount (green is enough), a missed past day gets a ✕ before it. Today's unfinished habits are `--ochre-bg` (or blank when nothing is logged). A day with every habit done gets a `--moss-tint` cell; a past day with any miss gets `--rust-tint`. Future days show only the date; habits only count from the day they were created. Today's date sits in an `--ink` circle.
+**Calendar:** Monday-start grid of square cells. A legend panel above names the habits top to bottom. One chip per habit per day: done = `--blue-bg`, missed = `--red-bg`, today's partial quantity = `--amber-bg`. Binary: ✓, ✕, or the day's note (8px) instead of the ✕. Quantity: amount in mono with no space before the unit (`158g`); a missed past day gets ✕ before it. All-done days get `--blue-tint`, past days with a miss `--red-tint`. Today has a blue outline and the date on a blue square. Future days are transparent and show only the date. Habits only count from the day they were created.
 
-**Day sheet:** tapping a past day or today in the calendar opens a bottom sheet (same style as the habit sheet) titled with the date, listing that day's habits using the same cards as the Today view (same tap cycle, quick-adds and notes). Edits apply to that day and update the calendar live. Future days and days before any habit existed aren't tappable; the habit name isn't editable from this sheet.
+**Day sheet:** tapping a past day or today opens a sheet titled with the date, listing that day's habits with the same cards (names not editable there). Future days and days before any habit existed aren't tappable.
+
+**Habit sheet:** uppercase field labels, square inputs with a blue focus ring, segmented "Yes / no | Amount per day" control with a sliding blue highlight, full-width blue submit, red text "Delete habit".
 
 ## Layout
 
-- Single column, mobile-first, no desktop breakpoints
-- Cards with 14px padding, 14–16px radius, 10px gap between them
-- Borders always 0.5px, never decorative shadows
+- Single column, max 480px, 16px side padding, mobile-first, no desktop breakpoints.
+- Cards: 16px padding, 8px gap.
+- Respect safe areas: top padding includes `env(safe-area-inset-top)` (status bar is `black-translucent`); tab bar and sheets include the bottom inset.

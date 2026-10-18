@@ -1,8 +1,33 @@
 .tab-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
   display: flex;
-  border-top: 0.5px solid var(--line);
-  padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
-  background: var(--paper);
+  border-top: 1px solid var(--line);
+  padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+  background: rgba(10, 13, 19, 0.82);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+}
+
+/* Bar riding the top edge, sliding under the active tab. */
+.tab-indicator {
+  position: absolute;
+  top: -1px;
+  left: 0;
+  height: 2px;
+  display: flex;
+  justify-content: center;
+  transition: transform var(--dur-slow) var(--ease-out);
+  pointer-events: none;
+}
+
+.tab-indicator::before {
+  content: '';
+  width: 40px;
+  height: 100%;
+  background: var(--blue-text);
+  box-shadow: 0 0 12px var(--blue-glow);
 }
 
 .tab-item {
@@ -13,13 +38,28 @@
   gap: 4px;
   border: none;
   background: transparent;
-  color: var(--ink-soft);
-  font-size: 12px;
-  padding: 4px;
+  color: var(--text-faint);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 6px 4px;
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+  transition: color var(--dur) var(--ease-out);
+}
+
+.tab-icon {
+  transition: transform var(--dur) var(--ease-spring);
+}
+
+.tab-item:active .tab-icon {
+  transform: scale(0.88);
 }
 
 .tab-item.active {
-  color: var(--ink);
+  color: var(--text);
+}
+
+.tab-item.active .tab-icon {
+  color: var(--blue-text);
+  transform: translateY(-1px);
 }

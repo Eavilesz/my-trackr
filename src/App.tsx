@@ -10,8 +10,11 @@ function App() {
   return (
     <div className="app-shell">
       <main className="app-content">
-        {view === 'today' && <TodayView />}
-        {view === 'month' && <CalendarView />}
+        {/* Keyed so switching tabs remounts and replays the entrance. */}
+        <div key={view} className="view">
+          {view === 'today' && <TodayView />}
+          {view === 'month' && <CalendarView />}
+        </div>
       </main>
       <TabBar active={view} onChange={setView} />
     </div>

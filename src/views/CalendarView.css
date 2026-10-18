@@ -1,43 +1,89 @@
 .cal-header {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
-.cal-label {
-  font-size: 13px;
-  color: var(--ink-soft);
+.cal-header .cal-label {
   margin: 0;
 }
 
 .cal-nav {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--ink);
+  gap: 4px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
 }
 
 .cal-nav button {
-  border: none;
-  background: transparent;
-  color: var(--ink-soft);
   display: flex;
-  padding: 2px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text-soft);
+  padding: 6px;
   cursor: pointer;
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.cal-nav button:active {
+  transform: scale(0.9);
+  color: var(--text);
+  border-color: var(--blue);
+}
+
+.cal-month {
+  display: inline-block;
+  min-width: 128px;
+  text-align: center;
+  overflow: hidden;
+}
+
+.cal-month--next {
+  animation: slide-from-right var(--dur) var(--ease-out);
+}
+
+.cal-month--prev {
+  animation: slide-from-left var(--dur) var(--ease-out);
+}
+
+.cal-empty {
+  cursor: default;
 }
 
 .cal-legend {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px 12px;
-  margin: 0 0 12px;
-  font-size: 12px;
-  color: var(--ink-soft);
+  gap: 6px 14px;
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
 }
 
+/* Legend entries reuse TaskName, which is styled for cards — tone it down here. */
+.cal-legend .cal-legend-item {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--text-soft);
+  gap: 5px;
+}
+
+.cal-weekdays,
 .cal-grid {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -46,36 +92,89 @@
 
 .cal-weekday {
   text-align: center;
-  font-size: 12px;
-  color: var(--ink-soft);
-  padding-bottom: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-faint);
+  padding-bottom: 6px;
+}
+
+.cal-grid--next {
+  animation: slide-from-right var(--dur-slow) var(--ease-out);
+}
+
+.cal-grid--prev {
+  animation: slide-from-left var(--dur-slow) var(--ease-out);
+}
+
+@keyframes slide-from-right {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes slide-from-left {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .cal-day {
+  position: relative;
   font: inherit;
   color: inherit;
   text-align: inherit;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
   min-height: 76px;
-  padding: 4px 1px;
-  background: var(--card);
-  border: 0.5px solid var(--line);
-  border-radius: 8px;
+  padding: 4px 2px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  animation: fade-in var(--dur-slow) var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 7ms);
+  transition:
+    background-color var(--dur) var(--ease-out),
+    border-color var(--dur) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
 }
 
 button.cal-day {
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+}
+
+button.cal-day:active {
+  transform: scale(0.94);
+  border-color: var(--blue);
 }
 
 .cal-day--done {
-  background: var(--moss-tint);
+  background: var(--blue-tint);
+  border-color: #1d3566;
 }
 
 .cal-day--missed {
-  background: var(--rust-tint);
+  background: var(--red-tint);
+  border-color: #3a1a20;
+}
+
+.cal-day--future {
+  background: transparent;
+  border-color: rgba(34, 44, 59, 0.5);
+}
+
+.cal-day--today {
+  border-color: var(--blue);
+  box-shadow: inset 0 0 0 1px var(--blue);
 }
 
 .cal-date {
@@ -84,22 +183,23 @@ button.cal-day {
   align-items: center;
   justify-content: center;
   min-width: 22px;
-  height: 22px;
+  height: 20px;
+  padding: 0 3px;
   margin-bottom: 2px;
-  border-radius: 11px;
-  font-size: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
   font-weight: 500;
-  color: var(--ink);
+  color: var(--text);
 }
 
 .cal-day--future .cal-date {
-  color: var(--ink-soft);
+  color: var(--text-faint);
   font-weight: 400;
 }
 
 .cal-date--today {
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--blue);
+  color: #fff;
 }
 
 .cal-chip {
@@ -107,10 +207,12 @@ button.cal-day {
   align-items: center;
   justify-content: center;
   gap: 1px;
-  height: 18px;
+  height: 17px;
   padding: 0 1px;
-  border-radius: 5px;
   overflow: hidden;
+  transition:
+    background-color var(--dur) var(--ease-out),
+    color var(--dur) var(--ease-out);
 }
 
 .cal-chip--empty {
@@ -118,18 +220,18 @@ button.cal-day {
 }
 
 .cal-chip--done {
-  background: var(--moss-bg);
-  color: var(--moss);
+  background: var(--blue-bg);
+  color: var(--blue-text);
 }
 
 .cal-chip--missed {
-  background: var(--rust-bg);
-  color: var(--rust-text);
+  background: var(--red-bg);
+  color: var(--red-text);
 }
 
 .cal-chip--pending {
-  background: var(--ochre-bg);
-  color: var(--ochre-text);
+  background: var(--amber-bg);
+  color: var(--amber-text);
 }
 
 .cal-chip svg {
@@ -150,12 +252,4 @@ button.cal-day {
 /* Notes are free text and need the room, so they're set smaller than values. */
 .cal-chip-text--note {
   font-size: 8px;
-}
-
-/* Legend entries reuse TaskName, which is styled for cards — tone it down here. */
-.cal-legend .cal-legend-item {
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--ink-soft);
-  gap: 4px;
 }

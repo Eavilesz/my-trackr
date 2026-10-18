@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import { parseISO } from 'date-fns'
 import { BinaryTaskCard } from './BinaryTaskCard'
 import { QuantityTaskCard } from './QuantityTaskCard'
@@ -18,32 +19,32 @@ export function DayHabits({ dateKey, tasks, onEdit }: Props) {
 
   return (
     <div className="today-list">
-      {tasks.map((task) => {
+      {tasks.map((task, i) => {
         const edit = onEdit && (() => onEdit(task))
-        if (task.type === 'binary') {
-          return (
-            <BinaryTaskCard
-              key={task.id}
-              task={task}
-              value={getLog(dateKey, task.id)}
-              streak={currentStreak(state, task, parseISO(dateKey))}
-              note={getNote(dateKey, task.id)}
-              onNoteChange={(text) => setNote(dateKey, task.id, text)}
-              onToggle={() => cycleBinary(dateKey, task.id)}
-              onEdit={edit}
-            />
-          )
-        }
         const value = getLog(dateKey, task.id)
         return (
-          <QuantityTaskCard
-            key={task.id}
-            task={task}
-            value={value}
-            onAdd={(amount) => addToLog(dateKey, task.id, amount)}
-            onComplete={() => setLog(dateKey, task.id, value >= task.goal ? 0 : task.goal)}
-            onEdit={edit}
-          />
+          // --i staggers each card's entrance (see .habit-item).
+          <div key={task.id} className="habit-item" style={{ '--i': i } as CSSProperties}>
+            {task.type === 'binary' ? (
+              <BinaryTaskCard
+                task={task}
+                value={value}
+                streak={currentStreak(state, task, parseISO(dateKey))}
+                note={getNote(dateKey, task.id)}
+                onNoteChange={(text) => setNote(dateKey, task.id, text)}
+                onToggle={() => cycleBinary(dateKey, task.id)}
+                onEdit={edit}
+              />
+            ) : (
+              <QuantityTaskCard
+                task={task}
+                value={value}
+                onAdd={(amount) => addToLog(dateKey, task.id, amount)}
+                onComplete={() => setLog(dateKey, task.id, value >= task.goal ? 0 : task.goal)}
+                onEdit={edit}
+              />
+            )}
+          </div>
         )
       })}
     </div>

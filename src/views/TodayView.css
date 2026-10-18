@@ -1,50 +1,166 @@
 .today-header {
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
-.today-date {
-  font-size: 13px;
-  color: var(--ink-soft);
-  margin: 0 0 2px;
+.today-date,
+.cal-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--blue-text);
+  margin: 0 0 6px;
 }
 
 .today-title {
-  font-size: 26px;
-  font-weight: 500;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1;
   margin: 0;
 }
 
 .today-add {
   flex: none;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: 0.5px solid var(--line);
-  background: var(--card);
-  color: var(--ink);
+  width: 42px;
+  height: 42px;
+  border: none;
+  background: var(--blue);
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  box-shadow: 0 6px 20px rgba(47, 107, 240, 0.35);
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.today-add svg {
+  transition: transform var(--dur) var(--ease-spring);
+}
+
+.today-add:hover {
+  background: var(--blue-hover);
+}
+
+.today-add:active {
+  transform: scale(0.92);
+}
+
+.today-add:active svg {
+  transform: rotate(90deg);
+}
+
+/* Daily progress: one segment per habit, filling left to right. */
+.today-progress {
+  margin-bottom: 20px;
+}
+
+.today-progress-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-soft);
+  transition: color var(--dur) var(--ease-out);
+}
+
+.today-progress.is-complete .today-progress-label {
+  color: var(--blue-text);
+}
+
+.today-progress-count {
+  font-family: var(--font-mono);
+  color: var(--text-faint);
+}
+
+.today-progress-num {
+  display: inline-block;
+  color: var(--text);
+  animation: tick-up 320ms var(--ease-spring);
+}
+
+.today-progress-bar {
+  display: flex;
+  gap: 3px;
+  height: 4px;
+}
+
+.today-progress-seg {
+  position: relative;
+  flex: 1;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+
+.today-progress-seg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--blue);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.today-progress-seg.on::after {
+  transform: scaleX(1);
+}
+
+.today-progress.is-complete .today-progress-bar {
+  filter: drop-shadow(0 0 6px var(--blue-glow));
+  animation: glow-pulse 900ms var(--ease-out);
+}
+
+@keyframes glow-pulse {
+  0% {
+    filter: drop-shadow(0 0 0 transparent);
+  }
+  40% {
+    filter: drop-shadow(0 0 10px rgba(122, 167, 255, 0.8));
+  }
+  100% {
+    filter: drop-shadow(0 0 6px var(--blue-glow));
+  }
 }
 
 .today-empty {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 28px 16px;
+  border: 1px dashed var(--line-strong);
+  background: transparent;
+  color: var(--text-soft);
   font-size: 14px;
-  color: var(--ink-soft);
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+.today-empty:active {
+  border-color: var(--blue);
+  color: var(--text);
 }
 
 .today-list {
   display: flex;
   flex-direction: column;
+  gap: var(--gap-card);
 }
 
-.today-list .task-card {
-  margin-top: 0;
-}
-
-.today-list .task-card + .task-card {
-  margin-top: var(--gap-card);
+.habit-item {
+  animation: rise-in var(--dur-slow) var(--ease-out) backwards;
+  animation-delay: calc(var(--i, 0) * 45ms);
 }

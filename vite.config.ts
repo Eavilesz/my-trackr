@@ -26,8 +26,8 @@ export default defineConfig({
         description: 'A minimal daily habit tracker',
         start_url: '/',
         display: 'standalone',
-        background_color: '#eef0e6',
-        theme_color: '#eef0e6',
+        background_color: '#07090d',
+        theme_color: '#07090d',
         icons: [
           {
             src: 'icon-192.png',

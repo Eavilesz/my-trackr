@@ -14,8 +14,15 @@ type Props = {
 }
 
 export function TabBar({ active, onChange }: Props) {
+  const activeIndex = TABS.findIndex((t) => t.id === active)
+
   return (
     <nav className="tab-bar">
+      <span
+        className="tab-indicator"
+        style={{ width: `${100 / TABS.length}%`, transform: `translateX(${activeIndex * 100}%)` }}
+        aria-hidden
+      />
       {TABS.map(({ id, label, Icon }) => {
         const isActive = id === active
         return (
@@ -26,7 +33,7 @@ export function TabBar({ active, onChange }: Props) {
             onClick={() => onChange(id)}
             aria-current={isActive ? 'page' : undefined}
           >
-            <Icon size={18} stroke={1.75} />
+            <Icon size={20} stroke={1.75} className="tab-icon" />
             <span>{label}</span>
           </button>
         )

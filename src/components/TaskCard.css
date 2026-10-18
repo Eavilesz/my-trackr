@@ -1,12 +1,178 @@
 .task-card {
-  background: var(--card);
-  border: 0.5px solid var(--line);
-  border-radius: var(--radius-card);
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
   padding: var(--pad-card);
+  transition:
+    border-color var(--dur) var(--ease-out),
+    background-color var(--dur) var(--ease-out);
 }
 
-.task-card + .task-card {
-  margin-top: var(--gap-card);
+/* State bar on the left edge: grows in when a habit is done or failed. */
+.task-card::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: -1px;
+  bottom: -1px;
+  width: 3px;
+  background: var(--blue);
+  transform: scaleY(0);
+  transform-origin: center;
+  transition:
+    transform var(--dur-slow) var(--ease-out),
+    background-color var(--dur) var(--ease-out);
+}
+
+.task-card.is-done {
+  border-color: #1d3566;
+  background: var(--blue-tint);
+}
+
+.task-card.is-done::before {
+  transform: scaleY(1);
+}
+
+.task-card.is-failed {
+  border-color: #4a1e25;
+  background: var(--red-tint);
+}
+
+.task-card.is-failed::before {
+  background: var(--red);
+  transform: scaleY(1);
+}
+
+/* Light sweep across the card on completion. */
+.card-sweep {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.card-sweep::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 20%, rgba(122, 167, 255, 0.16) 50%, transparent 80%);
+  transform: translateX(-100%);
+  animation: sweep 640ms var(--ease-out) forwards;
+}
+
+@keyframes sweep {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* Check button (shared) */
+
+.check-btn {
+  position: relative;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1.5px solid var(--line-strong);
+  background: var(--surface-2);
+  color: #fff;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.check-btn:active {
+  transform: scale(0.9);
+}
+
+.mark {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.75;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+}
+
+.mark path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+/* Draw the mark in — only right after a tap. */
+.fx-done .mark path,
+.fx-failed .mark path,
+.pop .mark path {
+  stroke-dashoffset: 1;
+  animation: draw 260ms var(--ease-out) 70ms forwards;
+}
+
+.fx-failed .mark path + path {
+  animation-delay: 150ms;
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Burst: square ring + corner sparks */
+
+.burst {
+  position: absolute;
+  inset: -1.5px;
+  pointer-events: none;
+}
+
+.burst::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px solid var(--blue-text);
+  animation: ring 520ms var(--ease-out) forwards;
+}
+
+@keyframes ring {
+  from {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(1.75);
+    opacity: 0;
+  }
+}
+
+.burst i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+  background: var(--blue-text);
+  animation: spark 520ms var(--ease-out) forwards;
+}
+
+.burst i:nth-child(1) { --dx: -1; --dy: -1; }
+.burst i:nth-child(2) { --dx: 1; --dy: -1; }
+.burst i:nth-child(3) { --dx: 1; --dy: 1; }
+.burst i:nth-child(4) { --dx: -1; --dy: 1; }
+
+@keyframes spark {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(var(--dx) * 30px), calc(var(--dy) * 30px)) scale(0.4);
+    opacity: 0;
+  }
 }
 
 /* Binary */
@@ -18,30 +184,51 @@
 }
 
 .binary-check {
-  flex: none;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: 2px solid var(--line);
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+  width: 40px;
+  height: 40px;
 }
 
-.binary-check.checked {
-  border-color: var(--moss);
-  background: var(--moss);
-  color: #fff;
+.is-done .binary-check {
+  border-color: var(--blue);
+  background: var(--blue);
+  box-shadow: 0 0 18px var(--blue-glow);
 }
 
-.binary-check.failed {
-  border-color: var(--rust);
-  background: var(--rust);
-  color: #fff;
+.is-failed .binary-check {
+  border-color: var(--red);
+  background: var(--red);
+}
+
+.fx-done .binary-check {
+  animation: pop 380ms var(--ease-out);
+}
+
+.fx-failed .binary-check {
+  animation: shake 340ms var(--ease-in-out);
+}
+
+.fx-cleared .binary-check {
+  animation: settle 240ms var(--ease-out);
+}
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  30% { transform: scale(0.84); }
+  65% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(2px); }
+}
+
+@keyframes settle {
+  0% { transform: scale(0.9); }
+  100% { transform: scale(1); }
 }
 
 .binary-body {
@@ -49,31 +236,63 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
   text-align: left;
 }
 
-.task-label {
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--ink);
-}
-
-/* Icon + name share a baseline row. */
+/* Icon + name share a row. */
 .task-label {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
 }
 
 .task-icon {
   flex: none;
-  color: var(--ink-soft);
+  color: var(--text-soft);
+  transition: color var(--dur) var(--ease-out);
+}
+
+.is-done .task-icon {
+  color: var(--blue-text);
+}
+
+.is-failed .task-icon {
+  color: var(--red-text);
 }
 
 .task-subtext {
   font-size: 12px;
-  color: var(--ink-soft);
+  color: var(--text-soft);
+}
+
+.streak-num {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--text);
+}
+
+.is-done .streak-num {
+  color: var(--blue-text);
+}
+
+.fx-done .streak-num {
+  animation: tick-up 360ms var(--ease-spring);
+}
+
+@keyframes tick-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .task-name-btn {
@@ -83,40 +302,58 @@
   font-family: inherit;
   text-align: left;
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.task-name-btn:active {
+  opacity: 0.6;
 }
 
 .task-note {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   align-self: flex-start;
   border: none;
   background: transparent;
-  padding: 2px 0 0;
+  padding: 3px 0 0;
   font-size: 12px;
-  color: var(--ink-soft);
-  opacity: 0.7;
+  color: var(--text-faint);
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+  animation: rise-in var(--dur) var(--ease-out);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.task-note:active {
+  color: var(--text-soft);
 }
 
 .task-note.has-note {
-  opacity: 1;
-  color: var(--ink);
+  color: var(--red-text);
 }
 
 .task-note-input {
   width: 100%;
-  margin-top: 4px;
-  padding: 6px 8px;
-  border: 0.5px solid var(--line);
-  border-radius: var(--radius-chip);
-  background: var(--paper);
-  color: var(--ink);
+  margin-top: 6px;
+  padding: 7px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 0;
+  background: var(--surface-2);
+  color: var(--text);
   font-family: inherit;
   /* iOS Safari zooms in on focus for inputs under 16px. */
   font-size: 16px;
+  outline: none;
+  animation: rise-in var(--dur) var(--ease-out);
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+
+.task-note-input:focus {
+  border-color: var(--red);
+}
+
+.task-note-input::placeholder {
+  color: var(--text-faint);
 }
 
 /* Quantity */
@@ -124,70 +361,184 @@
 .quantity-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .quantity-name {
   flex: 1;
+  min-width: 0;
 }
 
+/* The visible box is the inner span, so it can be re-keyed to replay the pop. */
 .quantity-check {
-  flex: none;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: 2px solid var(--line);
+  width: 24px;
+  height: 24px;
+  border: none;
   background: transparent;
+}
+
+.check-box {
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+  border: 1.5px solid var(--line-strong);
+  background: var(--surface-2);
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur) var(--ease-out);
 }
 
-.quantity-check.checked {
-  border-color: var(--ochre);
-  background: var(--ochre);
-  color: #fff;
+.is-done .check-box {
+  border-color: var(--blue);
+  background: var(--blue);
+  box-shadow: 0 0 14px var(--blue-glow);
+}
+
+.check-box.pop {
+  animation: pop 380ms var(--ease-out);
+}
+
+.quantity-check .burst {
+  inset: 0;
+}
+
+.quantity-check .burst i {
+  animation-name: spark-sm;
+}
+
+@keyframes spark-sm {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(var(--dx) * 20px), calc(var(--dy) * 20px)) scale(0.4);
+    opacity: 0;
+  }
 }
 
 .quantity-figure {
+  position: relative;
   font-family: var(--font-mono);
-  font-size: 14px;
-  color: var(--ochre);
+  font-size: 13px;
   white-space: nowrap;
 }
 
+.quantity-value {
+  display: inline-block;
+  font-weight: 500;
+  color: var(--amber-text);
+  transition: color var(--dur) var(--ease-out);
+}
+
+.is-done .quantity-value {
+  color: var(--blue-text);
+}
+
+.quantity-value.bump {
+  animation: bump 300ms var(--ease-spring);
+}
+
+@keyframes bump {
+  0% { transform: translateY(-5px); opacity: 0.4; }
+  100% { transform: none; opacity: 1; }
+}
+
+.quantity-goal {
+  color: var(--text-soft);
+}
+
+.quantity-floater {
+  position: absolute;
+  left: 0;
+  bottom: 100%;
+  font-weight: 500;
+  color: var(--amber-text);
+  pointer-events: none;
+  animation: float-up 700ms var(--ease-out) forwards;
+}
+
+.is-done .quantity-floater {
+  color: var(--blue-text);
+}
+
+@keyframes float-up {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+}
+
 .quantity-track {
-  height: 8px;
-  border-radius: 4px;
-  background: var(--ochre-bg);
+  height: 6px;
+  background: var(--surface-3);
   overflow: hidden;
 }
 
 .quantity-fill {
+  position: relative;
   height: 100%;
-  background: var(--ochre);
-  border-radius: 4px;
-  transition: width 0.2s ease;
+  background: var(--amber);
+  overflow: hidden;
+  transition:
+    width 520ms var(--ease-out),
+    background-color var(--dur-slow) var(--ease-out);
+}
+
+.is-done .quantity-fill {
+  background: var(--blue);
+  box-shadow: 0 0 12px var(--blue-glow);
+}
+
+.quantity-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  transform: translateX(-100%);
+  animation: sweep 700ms var(--ease-out) 120ms forwards;
 }
 
 .quantity-chips {
   display: flex;
-  gap: 8px;
-  margin-top: 10px;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
 }
 
 .quantity-chip {
-  border: none;
-  background: var(--ochre-bg);
-  color: var(--ochre-text);
-  font-size: 13px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface-2);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12px;
   font-weight: 500;
-  border-radius: var(--radius-chip);
-  padding: 6px 12px;
+  padding: 7px 12px;
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+
+.quantity-chip:active {
+  transform: scale(0.94);
+  background: var(--amber-bg);
+  border-color: var(--amber);
+}
+
+.quantity-chip--other {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  color: var(--text-soft);
 }

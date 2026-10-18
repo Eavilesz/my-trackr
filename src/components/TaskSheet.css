@@ -1,65 +1,142 @@
 .sheet-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(30, 35, 28, 0.35);
+  z-index: 10;
   display: flex;
   align-items: flex-end;
-  z-index: 10;
+  justify-content: center;
+  background: rgba(2, 4, 8, 0.72);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  animation: fade-in var(--dur) var(--ease-out) both;
+}
+
+.sheet-backdrop.is-closing {
+  animation: fade-out 220ms var(--ease-in-out) forwards;
 }
 
 .sheet {
   width: 100%;
-  background: var(--paper);
-  border-radius: 20px 20px 0 0;
-  padding: 20px 16px calc(20px + env(safe-area-inset-bottom));
+  max-width: 480px;
+  max-height: 88vh;
+  overflow-y: auto;
+  /* A thin blue accent fading along the top edge. */
+  background:
+    linear-gradient(90deg, var(--blue), transparent 75%) top / 100% 2px no-repeat,
+    var(--surface);
+  padding: 20px 16px calc(24px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  max-height: 85vh;
-  overflow-y: auto;
+  gap: 16px;
+  box-shadow: 0 -24px 60px rgba(0, 0, 0, 0.5);
+  animation: sheet-in 380ms var(--ease-out) both;
+}
+
+.is-closing .sheet {
+  animation: sheet-out 220ms var(--ease-in-out) forwards;
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes sheet-out {
+  from {
+    transform: none;
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
 }
 
 .sheet-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding-top: 4px;
 }
 
 .sheet-header h2 {
-  font-size: 18px;
-  font-weight: 500;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   margin: 0;
 }
 
 .sheet-close {
-  border: none;
-  background: transparent;
-  color: var(--ink-soft);
-  padding: 4px;
+  display: flex;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--text-soft);
+  padding: 7px;
   cursor: pointer;
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.sheet-close:active {
+  transform: scale(0.9);
+  color: var(--text);
+}
+
+.sheet-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .sheet-field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  font-size: 13px;
-  color: var(--ink-soft);
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-soft);
   flex: 1;
   min-width: 0;
 }
 
 .sheet-field input {
   width: 100%;
-  border: 0.5px solid var(--line);
-  border-radius: 10px;
-  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 0;
+  padding: 11px 12px;
   /* iOS Safari zooms the page in on focus for any input under 16px, and
      doesn't zoom back out on blur — 16px avoids triggering it. */
   font-size: 16px;
-  color: var(--ink);
-  background: var(--card);
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--text);
+  background: var(--surface-2);
   font-family: inherit;
+  outline: none;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur) var(--ease-out);
+}
+
+.sheet-field input::placeholder {
+  color: var(--text-faint);
+}
+
+.sheet-field input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(47, 107, 240, 0.22);
 }
 
 .sheet-row {
@@ -67,73 +144,133 @@
   gap: 10px;
 }
 
-.sheet-type-toggle {
+.sheet-quantity-fields {
   display: flex;
-  gap: 8px;
+  flex-direction: column;
+  gap: 16px;
+  animation: rise-in var(--dur) var(--ease-out);
+}
+
+/* Segmented control with a highlight that slides between options. */
+.sheet-type-toggle {
+  position: relative;
+  display: flex;
+  border: 1px solid var(--line-strong);
+  background: var(--surface-2);
+  padding: 3px;
+}
+
+.sheet-type-toggle::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc(50% - 3px);
+  background: var(--blue);
+  transition: transform var(--dur) var(--ease-out);
+}
+
+.sheet-type-toggle[data-value='quantity']::before {
+  transform: translateX(100%);
 }
 
 .sheet-type-toggle button {
+  position: relative;
   flex: 1;
-  border: 0.5px solid var(--line);
-  background: var(--card);
-  color: var(--ink-soft);
-  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-soft);
   padding: 10px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
+  transition: color var(--dur) var(--ease-out);
 }
 
 .sheet-type-toggle button.active {
-  border-color: var(--moss);
-  background: var(--moss-bg);
-  color: var(--ink);
+  color: #fff;
 }
 
 .sheet-submit {
   border: none;
-  background: var(--moss);
+  background: var(--blue);
   color: #fff;
-  border-radius: 12px;
-  padding: 14px;
+  padding: 15px;
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 700;
+  letter-spacing: 0.01em;
   cursor: pointer;
-  margin-top: 6px;
+  margin-top: 4px;
+  box-shadow: 0 8px 24px rgba(47, 107, 240, 0.28);
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.sheet-submit:hover {
+  background: var(--blue-hover);
+}
+
+.sheet-submit:active {
+  transform: scale(0.98);
 }
 
 .sheet-delete {
-  border: none;
+  border: 1px solid transparent;
   background: transparent;
-  color: #b3432f;
+  color: var(--red-text);
   font-size: 14px;
-  font-weight: 500;
-  padding: 8px;
+  font-weight: 600;
+  padding: 10px;
   cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+
+.sheet-delete:active {
+  background: var(--red-bg);
+  border-color: #5a222a;
 }
 
 .icon-picker {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
+  gap: 6px;
 }
 
 .icon-picker button {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 44px;
-  border: 0.5px solid var(--line);
-  background: var(--card);
-  color: var(--ink-soft);
-  border-radius: 10px;
+  height: 46px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--text-soft);
   padding: 0;
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.icon-picker button svg {
+  transition: transform var(--dur) var(--ease-spring);
+}
+
+.icon-picker button:active {
+  transform: scale(0.92);
 }
 
 .icon-picker button.active {
-  border-color: var(--moss);
-  background: var(--moss-bg);
-  color: var(--ink);
+  border-color: var(--blue);
+  background: var(--blue-bg);
+  color: var(--blue-text);
+}
+
+.icon-picker button.active svg {
+  transform: scale(1.12);
 }
