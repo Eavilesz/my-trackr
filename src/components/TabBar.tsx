@@ -1,11 +1,10 @@
-import { IconSun, IconChartBar, IconCalendar } from '@tabler/icons-react'
+import { IconSun, IconCalendar } from '@tabler/icons-react'
 import './TabBar.css'
 
-export type ViewId = 'today' | 'week' | 'month'
+export type ViewId = 'today' | 'month'
 
 const TABS: { id: ViewId; label: string; Icon: typeof IconSun }[] = [
   { id: 'today', label: 'Today', Icon: IconSun },
-  { id: 'week', label: 'Week', Icon: IconChartBar },
   { id: 'month', label: 'Month', Icon: IconCalendar },
 ]
 

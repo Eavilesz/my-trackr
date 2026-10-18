@@ -1,4 +1,4 @@
-import { format, startOfWeek, addDays, startOfMonth, endOfMonth, addMonths } from 'date-fns'
+import { format, getISODay, addDays, startOfMonth, endOfMonth, addMonths } from 'date-fns'
 import type { DateKey } from './types'
 
 /** Local-calendar-day key, not UTC — matters near midnight. */
@@ -10,22 +10,16 @@ export function todayKey(): DateKey {
   return toDateKey(new Date())
 }
 
-/** Monday-start week containing `date`. */
-export function weekDays(date: Date): Date[] {
-  const start = startOfWeek(date, { weekStartsOn: 1 })
-  return Array.from({ length: 7 }, (_, i) => addDays(start, i))
-}
-
-export function monthDays(date: Date): Date[] {
+/**
+ * Cells for a Monday-start calendar grid of `date`'s month: `null` padding for
+ * the days before the 1st, then every day of the month.
+ */
+export function monthGrid(date: Date): (Date | null)[] {
   const start = startOfMonth(date)
   const end = endOfMonth(date)
-  const days: Date[] = []
-  for (let d = start; d <= end; d = addDays(d, 1)) days.push(d)
-  return days
-}
-
-export function shiftWeek(date: Date, delta: number): Date {
-  return addDays(date, delta * 7)
+  const cells: (Date | null)[] = Array.from({ length: getISODay(start) - 1 }, () => null)
+  for (let d = start; d <= end; d = addDays(d, 1)) cells.push(d)
+  return cells
 }
 
 export function shiftMonth(date: Date, delta: number): Date {

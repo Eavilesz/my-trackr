@@ -41,11 +41,9 @@ Rule: moss = binary/completed. Ochre = quantity/progress. Don't mix meanings bet
 - Fill bar: 8px tall track in `--ochre-bg`, `--ochre` fill, 4px radius
 - Quick-add chips below: `--ochre-bg` background, dark text (`#633806`), 8px radius — e.g. "+10 g", "+20 g", "other"
 
-**Bottom tab bar:** Today / Week / Month, 18px Tabler outline icon above the label, active in `--ink`, inactive in `--ink-soft`
+**Bottom tab bar:** Today / Month, 18px Tabler outline icon above the label, active in `--ink`, inactive in `--ink-soft`
 
-**Weekly view:** grid with a label column (habits) + 7 columns (M–S). Binary = filled/empty dot. Quantity = rounded square, filled or muted depending on whether the goal was hit that day.
-
-**Monthly view:** heatmap of rounded squares (one per day), color based on the aggregate completion percentage across all habits that day — solid moss = 100%, light moss (`--moss-bg`) = partial completion. General view, not per individual habit.
+**Calendar view:** Monday-start month grid, one card-colored cell per day. Each cell shows the date, then one chip per habit in the same order as the habit list (a legend above the grid names them). Binary habit = moss chip with a check when done, blank otherwise. Quantity habit = the logged amount in mono (e.g. `158 g`); moss with a check when the goal was hit, `--ochre-bg` when logged but under goal. A day with every habit done gets a `--moss-bg` cell. Future days show only the date; habits only appear from the day they were created. Today's date sits in an `--ink` circle.
 
 ## Layout
 
